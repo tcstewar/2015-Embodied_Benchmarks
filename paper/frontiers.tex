@@ -23,17 +23,22 @@
 
 
 \def\keyFont{\fontsize{8}{11}\helveticabold }
-\def\firstAuthorLast{Sample {et~al.}} %use et al only if is more than 1 author
-\def\Authors{First Author\,$^{1,*}$, Co-Author\,$^{2}$ and Co-Author\,$^2$}
+\def\firstAuthorLast{Stewart {et~al.}} %use et al only if is more than 1 author
+\def\Authors{Terrence C. Stewart\,$^{1,*}$, Ashley Kleinhans\,$^{2}$ and Chris Eliasmith\,$^1$}
 % Affiliations should be keyed to the author's name with superscript numbers and be listed as follows: Laboratory, Institute, Department, Organization, City, State abbreviation (USA, Canada, Australia), and Country (without detailed address information such as city zip codes or street names).
 % If one of the authors has a change of address, list the new address below the correspondence details using a superscript symbol and use the same symbol to indicate the author in the author list.
-\def\Address{$^{1}$Laboratory X, Institute X, Department X, Organization X, City X , State XX (only USA, Canada and Australia), Country X \\
-$^{2}$Laboratory X, Institute X, Department X, Organization X, City X , State XX (only USA, Canada and Australia), Country X  }
+\def\Address{$^{1}$Centre for Theoretical Neuroscience, University of Waterloo,
+    Waterloo, ON, Canada
+    \\
+$^{2}$Mobile Intelligent Autonomous Systems group, 
+      Council for Scientific and Industrial Research,
+      Pretoria, South Africa}
 % The Corresponding Author should be marked with an asterisk
 % Provide the exact contact address (this time including street name and city zip code) and email of the corresponding author
-\def\corrAuthor{Corresponding Author}
-\def\corrAddress{Laboratory X, Institute X, Department X, Organization X, Street X, City X , State XX (only USA, Canada and Australia), Zip Code, X Country X}
-\def\corrEmail{email@uni.edu}
+\def\corrAuthor{Terrence C. Stewart}
+\def\corrAddress{Centre for Theoretical Neuroscience, University of Waterloo,
+    Waterloo, ON, Canada}
+\def\corrEmail{tcstewar@uwaterloo.ca}
 
 
 
@@ -42,7 +47,7 @@ $^{2}$Laboratory X, Institute X, Department X, Organization X, City X , State XX
 \onecolumn
 \firstpage{1}
 
-\title[Running Title]{Article Title} 
+\title[Embodied Neuromorphic Benchmarks]{Embodied Neuromorphic Benchmarks} 
 
 \author[\firstAuthorLast ]{\Authors} %This field will be automatically populated
 \address{} %This field will be automatically populated
@@ -50,7 +55,6 @@ $^{2}$Laboratory X, Institute X, Department X, Organization X, City X , State XX
 
 \extraAuth{}% If there are more than 1 corresponding author, comment this line and uncomment the next one.
 %\extraAuth{corresponding Author2 \\ Laboratory X2, Institute X2, Department X2, Organization X2, Street X2, City X2 , State XX2 (only USA, Canada and Australia), Zip Code2, X2 Country X2, email2@uni2.edu}
-
 
 \maketitle
 
@@ -71,14 +75,23 @@ $^{2}$Laboratory X, Institute X, Department X, Organization X, City X , State XX
 
 \begin{abstract}
 
-%%% Leave the Abstract empty if your article falls under any of the following categories: Editorial Book Review, Commentary, Field Grand Challenge, Opinion or specialty Grand Challenge.
-\section{}
-%As a primary goal, the abstract should render the general significance and conceptual advance of the work clearly accessible to a broad readership. References should not be cited in the abstract.
-For full guidelines regarding your manuscript please refer to \href{http://www.frontiersin.org/about/AuthorGuidelines}{Author Guidelines} \\ or \textbf{Table \ref{Tab:01}} for a summary according to article type.
-
+    Evaluating the effectiveness and performance of neuromorphic hardware is
+    difficult.  It is even more difficult when the task of interest is an
+    embodied task; that is a task where the output from the neuromorphic
+    hardware affects its future input.  However, these embodied situations
+    are one of the primary potential uses of neuromorphic hardware.  To address
+    this, we present a methodology for embodied benchmarking and a particular
+    example of a benchmark for adaptive control of an arbitrary system.  These
+    benchmarks are flexible, in that they allow researchers to explicitly
+    modify the benchmark to identify particular task domains where particular
+    hardware excels.  Furthermore, the benchmarks make use of a hybrid of
+    real physical embodiment and a type of "minimal" simulation that has been
+    shown to lead to robust real-world performance, allowing the same benchmark
+    to be used by many researchers.
 
 \tiny
- \keyFont{ \section{Keywords:} Text Text Text Text Text Text Text Text } %All article types: you may provide up to 8 keywords; at least 5 are mandatory.
+ \keyFont{ \section{Keywords:} neuromorphic hardware, benchmarking, 
+        minimal simulation, adaptive control, neural networks} %All article types: you may provide up to 8 keywords; at least 5 are mandatory.
 \end{abstract}
 
 \section{Introduction}
