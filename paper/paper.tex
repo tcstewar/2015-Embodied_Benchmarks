@@ -125,15 +125,67 @@ of issues that complicate the development of such benchmarks.  Rather than
 simply providing a data file of inputs and desired outputs, the benchmark
 must either specify a full physical system for that embodiment, or it must 
 provide software for a simulation of that system.  As we discuss below, either
-approach is problematic, and addressing this problem is the primary goal of
+approach is problematic, and addressing this difficulty is the primary goal of
 this paper.
 
 
 \section{Embodied Benchmarks}
 
+An embodied benchmark task is one where the system we are studying has a 
+two-way interaction with some sort of environment.  That is, the outputs from
+the neuromorphic hardware are sent to the environment where they cause some
+sort of effect, the results of which change the subsequent input.  For example,
+the outputs might control the movement of a robot, which in turn affects the
+sensory data received by the robot.
 
 \subsection{Simulation versus Physical Instantiation}
 
+To define such a benchmark, we need to be explicit about the embodiment.  If
+it is a situation where a robot is to be controlled, we need to be explicit
+about all the details of that robot.  What motors are there?  How are they
+configured?  How strong are they?  What sensors are there?  Where are they
+placed?  How accurate are they?  However, even if these questions are
+answered, there is a fundamental problem in that \emph{other researchers
+need access to that exact robot}.  If a benchmark is to be widely used, other
+researchers developing their own hardware should be able to do their own 
+testing.
+
+Furthermore, using a physical robot also imposes significant practical
+difficulties when performing extensive benchmark testing.  When testing, we
+often want to run the same task over and over again, both for robustness and
+to see the effects of varying parameters.  With a physical robot, this means
+manually setting up the task, letting the test run, gathering the resulting
+data, and then resetting the robot back to the initial state.  This means that
+issues like battery life become problematic, and not just because there is a
+limited amount of time available for testing.  As the battery level changes,
+the performance of the robot itself can also change.  Futhermore, for any
+rigorous testing of the benchmark, we will want to examine situations where
+the system fails.  This means that some of the testing will involve parameter
+settings that lead to poor behaviour, which could involve physical damage to
+the robot itself.
+
+However, \emph{not} using a real physical embodiment for testing is also
+problematic.  First and foremost, without an actual real-world task, why
+should anyone have any confidence that the performance on the benchmark is
+reflective of the actual usefulness of the neuromorphic hardware?  It is
+very widely known that \emph{simulations of robots} (or other physical systems) are
+often much easier to control and better-behaved than the real thing.  The
+field of robotics is filled with algorithms that work well ``in theory'', but
+fail when run on actual hardware.  We do not want a benchmark that falls into
+this trap of failing to generalize to real situations.
+
+Furthermore, neuromorphic hardware has another constraint that severely limits
+the possibilities of simulation.  The normal approach when a simulation is
+too simple to reflect reality is to add details to the simulation itself.
+Incredibly finely detailed simulations can be created, filling in all of the
+details needed.  However, those resulting simulations \emph{cannot be run
+in real-time}.  This is a fundamental problem, in that most neuromorphic
+hardware is about real-time interactions, and there is no way to slow down
+the hardware to match the simulated environment.  This means that even if
+we spent the considerable amount of research effort needed to define a
+simulated environment for an embodied benchmark, that simulation could not
+be run fast enough to interact with most of the hardware that we would want
+to test.
 
 \subsection{Minimal Simulation}
 
