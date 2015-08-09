@@ -193,11 +193,121 @@ The above considerations seem to indicate that even though using real-world
 phyiscal hardware for benchmarking is problematic, it is still better than
 using simplistic simulations which may not generalize to real tasks.  However,
 we believe there is an alternate approach known as \emph{Minimal Simulation}
-\cite{Jakobi97evolutionaryrobotics}.  
+\cite{Jakobi97evolutionaryrobotics}.
 
+First, we note that the problem faced here is remarkably similar to a problem
+faced by the evolutionary robotics community.  In evolutionary robotics, the
+goal is to use genetic algorithms to \emph{evolve} systems that can control
+robots to perform various tasks.  These tasks can be as simple as navigation
+and obstacle avoidance, but have also included complex eight-legged walking,
+object identification, and visual tracking [refs???].
 
+However, performing this evolution on real physical robots is problematic
+for the same reasons that benchmarks on physical robots are problematic.  The
+robots must be reset to the same state each time; they often involve
+behaviour that can physically damage the robots; and they take a very long
+time to run.  For this reason, attempts were made to evolve using simulated
+robots.  However, the general finding was that algorithms that worked on the
+simulated robots would not work when run on the real physical robots.  If
+the simulations were improved, adding complex physical detail, then it was
+possible to generalize to real behaviour; unfortunately, such complex
+simulations would run slower than real-time [refs].
+
+To address this problem, Nicholas Jacobi proposed the creation of
+``minimal'' simulations.  These are simulations where there is variability
+\emph{within the simulation itself}.  In other words, we make \emph{poor}
+simulations, but ensure that the way in which it is poor is itself
+variable.  We then make sure that the controllers work across that whole
+range of variability.  ``Instead of trying to eliminate the differences between
+simulation and reality, they are acknowledged, and mechanisms are put in place
+to prevent evolving controllers from relying on them.'' [ref: jacobi thesis].
+
+With this approach, it was possible to build minimal simulations that would
+run faster than real-time and yet also be complex enough that if a system
+could successfully control the simulation, it was also likely to successfully
+control a real robot.  To achieve this, the simulations are made to be
+unreliable in almost every respect.  For example, for a simulation of a simple
+motor it would still be the case that if power is applied it would generally
+try to spin, but the exact amount of torque, the amount of sensory noise,
+the amount of time needed, the amount of static and dynamic friction, and so
+on would all be randomly chosen.  A successful controller would have to deal
+with this wide range of variability, and if it could handle that variability
+then we would have reason to believe it could also handle the real system.
+
+It is also worth noting that a minimal simulation \emph{only has to be a
+good simulation for successful behaviour}.  That is, ``if we are evolving 
+corridor following behaviour, the dynamics of the simulation might
+differ wildly from those of reality if the controller hits a wall or
+goes round in circles, but this does
+not matter, since the controllers we are interested in transferring
+across the reality gap will neither
+hit walls nor go round in circles.''  If the controller is poor, we do not 
+need the simulation to be at all accurate in exactly \emph{how} that poor
+behaviour is manifest.  We do not need an exact detailed physics model of
+the collision between a robot and a wall, or a detailed model of what happens
+to a robot arm when it starts oscillating wildly due to a poor control signal.
+All we need is for the simulation to be just good enough to indicate that
+things have gone wrong, and thus give a low score to that controller.
+
+Given the success of this approach for evolutionary robotics, we propose
+that it can be directly used for embodied neuromorphic benchmarks.  To do
+this, we create software simulations for each benchmark task.  These simulations
+must be fast enough to run in realtime (so that they can be controlled by
+real neuromorphic hardware), and they must be extremely variable.  Each time
+the simulation is run, different parameters will be chosed for this variability
+(so one run might have a large degree of sensor noise while the next run has
+none at all; one run might have more delay in the motor response and another
+might have less power available).  Being successful at the benchmark means
+being successful across all this variability.  
+
+The result should be a benchmark that can be run by any researcher.  The fact
+that it is a simulation means that source code can be shared, and that no
+specialized hardware is needed.  Furthermore, the variability in the simulation
+itself can be controlled, and this can help give a rich characterization of
+the benchmarked hardware.  For example, some hardware might only work with
+small amounts of sensor noise, or other hardware might only work when there
+is significant delay in the motor response.  This flexibility in parameters
+in the benchmark allows researchers to explicitly characterize that particular
+siuations where their hardware excells.  
 
 \subsection{Cheap Robotics}
+
+All of that said, we also need real physical embodiment as part of any
+benchmark of this kind.  While we claim that reliable minimal simulations
+are relatively easy to create, they are not a widely-used technique, and the
+real proof of behaviour is always in the real world.  For this reason, we
+also argue that every benchmark based on a minimal simulation should also
+have an easy-to-construct physical analog.  However, this physical version
+is not to be used as the primary benchmark.  Rather, this is meant as a
+double-check that the system does actually behave as expected.  The worry
+is always that if researchers focus on the simulated system when benchmarking
+their hardware, they may inadvertantly end up with hardware that only performs
+well in simulation.  
+
+For this physical aspect of the benchmark, we recommend cheap, widely-available
+components.  This allows a greater chance for other researchers to have
+access to the same (or similar) hardware.  For the particular example 
+benchmark described in the next section, we use the Lego Mindstorms EV3 kit,
+a simple robotics platform available at most toy stores.
+
+It is important to note that there is actually a theoretical advantage to
+using cheap robotics hardware for benchmarking, in addition to the practical
+advantages.  In particular, we \emph{don't want benchmarks that rely on
+particular high-speed, high-accuracy devices}.  The purpose of the benchmark
+is not to indicate how well this neuromorphic hardware works to control this
+one particular robot in this task.  Rather, the purpose of a benchmark is to
+characterise how well this neuromorphic hardware works on this task 
+\emph{in general}.  The variability in the minimal simulation means that it
+should be able to function across a wide variety of physical embodiments, and
+so if we are to choose one particular physical embodiment to test in the
+real world, then we should choose one that is not extremely high-precision.
+For this reason, we believe using cheap Lego robot is actually more useful
+for benchmarking than an expensive high-precision robot.\footnote{Of course,
+for more complex benchmark tasks we may need sensory and motor capabiities
+that are beyond that of a simple Lego robot.}
+
+\section{Embodied Benchmark 1: Adaptive Motor Control}
+
 
 
 
