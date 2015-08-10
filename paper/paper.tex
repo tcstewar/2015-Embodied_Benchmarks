@@ -199,7 +199,7 @@ First, we note that the problem faced here is remarkably similar to a problem
 faced by the evolutionary robotics community.  In evolutionary robotics, the
 goal is to use genetic algorithms to \emph{evolve} systems that can control
 robots to perform various tasks.  These tasks can be as simple as navigation
-and obstacle avoidance, but have also included complex eight-legged walking,
+and obstacle avoidance, but have also included walking,
 object identification, and visual tracking [refs???].
 
 However, performing this evolution on real physical robots is problematic
@@ -247,7 +247,14 @@ behaviour is manifest.  We do not need an exact detailed physics model of
 the collision between a robot and a wall, or a detailed model of what happens
 to a robot arm when it starts oscillating wildly due to a poor control signal.
 All we need is for the simulation to be just good enough to indicate that
-things have gone wrong, and thus give a low score to that controller.
+things have gone wrong, and thus give a low score to that controller.  This
+means that, for example, in a minimal simulation of an eight-legged walking robot,
+it is not necessary to have a physics simulation that correctly models what
+happens when two legs collide with each other.  Rather, if legs collide
+with each other, that is an indication that the walking behaviour is very poor,
+so as long as that result is indicated we can greatly simplify the simulation
+by not including all the details necessary to deal with these sorts of physical
+interactions.
 
 Given the success of this approach for evolutionary robotics, we propose
 that it can be directly used for embodied neuromorphic benchmarks.  To do
@@ -279,10 +286,7 @@ real proof of behaviour is always in the real world.  For this reason, we
 also argue that every benchmark based on a minimal simulation should also
 have an easy-to-construct physical analog.  However, this physical version
 is not to be used as the primary benchmark.  Rather, this is meant as a
-double-check that the system does actually behave as expected.  The worry
-is always that if researchers focus on the simulated system when benchmarking
-their hardware, they may inadvertantly end up with hardware that only performs
-well in simulation.  
+double-check that the system does actually behave as expected.  
 
 For this physical aspect of the benchmark, we recommend cheap, widely-available
 components.  This allows a greater chance for other researchers to have
@@ -316,7 +320,7 @@ the signal $u$ (one for each motor) and our only input is the current position
 of each motor $q$.
 
 The simplest controller for such a situation is a P (proportional) controller,
-where $u=K_p(q_d - q)$.  This is often supplemented with a derivative term,
+where $u=K_p(q_d - q)$.  This is often supplemented with a D (derivative) term,
 which helps to slow the system down as it approaches the desired position,
 thus avoiding overshooting and oscillation ($u=K_p(q_d - q) + K_d(\dot{q_d} - \dot{q})$),
 leading to the standard PD controller.  Both $K_p$ and $K_d$ are constants that can be
@@ -331,9 +335,9 @@ gravity.  Since the PD controller always produces an output $u=0$ when $q=q_d$,
 it cannot compensate for this, and so the arm will stay stationary at some
 angle below the desired angle. [TODO: add diagram]
 
-The standard solution to this problem is to add an integral term ($K_i \int{q_d-q dt}$)
+The standard solution to this problem is to add an I (integral) term ($K_i \int{(q_d-q) dt}$)
 to the controller, making it a PID controller.  The idea here is that as the difference between where it is and
-where we want it to be accumulates over time, the $K-i$ term gradually increases
+where we want it to be accumulates over time, the $K_i$ term gradually increases
 how much extra force is being applied until it is large enough to counteract
 the external force of gravity (or whatever other external forces are present).
 However, this approach has great difficulty when $q_d$ changes, since the
@@ -357,16 +361,18 @@ Fortunately, there is an adaptive solution to this problem, and it is one that
 fits well with neuromorphic hardware.  \cite{Slotine1987} shows that if you
 express the influence of these other external forces as $\tau=Y(q) \omega$
 (where $Y(q)$ is a fixed set of functions of $q$, such as $sin(q)$, and $\omega$
-is a vector of weights, one for each function in $Y$), then you can learn
+is a vector of scalar weights, one for each function in $Y$), then you can learn
 to compensate for these external forces by using the learning rule $\Delta \omega = \alpha Y(q) u$,
 where $u$ is the basic PD control signal.
 
-Importantly, as pointed out in [ref] and [ref], rather than making explicit
+Importantly, as pointed out by \cite{SannerSlotine1992} and \cite{Lewis1996}, rather than making explicit
 assumptions about the exact functions that should be in $Y(q)$, we can use
 a neural network approach where each neuron is a different function of $q$.  
 As long as there is enough hetereogenetity (i.e. as long as the neural activity
 forms a basis space that spans the desired space of functions), then the
-learning rule will continue to work.  
+learning rule will continue to work.  This approach has been used in the
+Recurrent Error-driven Adaptive Control Hierarchy model of human motor control
+(\citealt{dewolf2014}), and for quadcopter control [TODO: any citations for this?].
 
 This then suggests an explicit neuromorphic benchmark.  The input to the
 neuromorphic hardware is $q$, the system state.  This input is fed to each
