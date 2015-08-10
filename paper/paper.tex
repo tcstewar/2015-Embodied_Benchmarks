@@ -466,15 +466,66 @@ controller deals with these situations.
 
 \subsection{Cheap Robotics for Adaptive Control}
 
+Of course, we need physical confirmation that the minimal simulation defined
+in the previous section does a reasonable job.  For this, we define a
+particular easy-to-build example of a system that can be usefully controlled
+by this adaptive method.  For this, we use the Lego Mindstorms EV3 robot kit.
 
+The physical body is depicted in [TODO: add figure].  It consists of a single
+motor, mounted in such a way that there is a significant amount of weight on
+the arm itself (the weight of the motor itself).  Multiple motors can be
+added, and other configurations can be considered and should also be suitable
+for testing control, but here we just consider the basic case.
+
+To interface to the physical hardware, we installed the \texttt{ev3dev} operating
+system (\texttt{http://ev3dev.org}), a Debian-based Linux system specifically developed
+for the EV3.  We then installed and ran the \texttt{ev3\_link} program from \texttt{ev3dev-c}
+(\texttt{https://github.com/in4lio/ev3dev-c}).  This allows the EV3 to listen for
+UDP commands that tell it to set motor values and read sensor values.
+Communication with a PC was over a USB link (although the system also
+supports WiFi communication).  With constant communication, the system is
+able to adjust the power sent to the motors $u$ and give position feedback
+$q$ from those motors at a rate of around 300Hz.
+
+Figure [???] shows the system being controlled by a simple PD controller.
+The desired joint angle $q_d$ is varied randomly over time.  Notice that the
+system consistently undershoots and overshoots the desired angle, due to
+its inability to compensate for gravity.
+
+In Figure [???], we show the result of using the adaptive controller algorithm.
+The system quickly improves on the standard PD controller, learning to adjust
+its control signal $u$ to compensate for the unknown external forces.
+
+\section{Benchmark Analysis}
+
+- what do we measure?   performance: rmse and delay.  Also, power consumption?  cost?
+
+- for given hardware, how many neurons can be done in realtime?  that's how many should be used for comparison
+
+- show how these things change as we change parameters in the simulation
+
+- delays
+
+- number of motors $N$
+
+- magnitude of nonlinearity $Q$
+
+CPU, GPU, and SpiNNaker?
+
+\section{Other Benchmarks}
+
+(sketch out how this approach could be applied to other task)
+
+Adaptive Jacobian
+
+Driving down a corridor, avoiding obstacles
+
+Classical conditioning
+
+Operant conditioning 
 
 
 \section*{Disclosure/Conflict-of-Interest Statement}
-%Frontiers follows the recommendations by the International Committee of Medical Journal Editors (http://www.icmje.org/ethical_4conflicts.html) which require that all financial, commercial or other relationships that might be perceived by the academic community as representing a potential conflict of interest must be disclosed. If no such relationship exists, authors will be asked to declare that the research was conducted in the absence of any commercial or financial relationships that could be construed as a potential conflict of interest. When disclosing the potential conflict of interest, the authors need to address the following points:
-%•	Did you or your institution at any time receive payment or services from a third party for any aspect of the submitted work?
-%•	Please declare financial relationships with entities that could be perceived to influence, or that give the appearance of potentially influencing, what you wrote in the submitted work.
-%•	Please declare patents and copyrights, whether pending, issued, licensed and/or receiving royalties relevant to the work.
-%•	Please state other relationships or activities that readers could perceive to have influenced, or that give the appearance of potentially influencing, what you wrote in the submitted work.
 
 The authors declare that the research was conducted in the absence of any commercial or financial relationships that could be construed as a potential conflict of interest.
 
