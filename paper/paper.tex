@@ -306,7 +306,117 @@ for benchmarking than an expensive high-precision robot.\footnote{Of course,
 for more complex benchmark tasks we may need sensory and motor capabiities
 that are beyond that of a simple Lego robot.}
 
-\section{Embodied Benchmark 1: Adaptive Motor Control}
+\section{A Benchmark: Adaptive Motor Control}
+
+To demonstrate this approach to creating embodied neuromorphic benchmarks,
+we now consider a basic control task.  Suppose we have a system with a number
+of joints $q$ and we want to send an output $u$ to those motors such that
+the joints move to a particular desired position $q_d$.  Our only output is
+the signal $u$ (one for each motor) and our only input is the current position
+of each motor $q$.
+
+The simplest controller for such a situation is a P (proportional) controller,
+where $u=K_p(q_d - q)$.  This is often supplemented with a derivative term,
+which helps to slow the system down as it approaches the desired position,
+thus avoiding overshooting and oscillation ($u=K_p(q_d - q) + K_d(\dot{q_d} - \dot{q})$),
+leading to the standard PD controller.  Both $K_p$ and $K_d$ are constants that can be
+hand-tuned to particular situations.
+
+However, this controller has difficulty in the presence of significant external
+forces.  For example, consider a single motor controlling the angle of a single
+arm.  If the arm is held out to the side, gravity acting on the mass of the
+arm itself will pull the arm downward.  Thus to hold the arm still at a
+particular $q_d$ will require the controller to apply a force to counteract
+gravity.  Since the PD controller always produces an output $u=0$ when $q=q_d$,
+it cannot compensate for this. [TODO: add diagram]
+
+The standard solution to this problem is to add an integral term ($K_i \int{q_d-q dt}$)
+to the controller, making it a PID controller.  The idea here is that as the difference between where it is and
+where we want it to be accumulates over time, the $K-i$ term gradually increases
+how much extra force is being applied until it is large enough to counteract
+the external force of gravity (or whatever other external forces are present).
+However, this approach has great difficulty when $q_d$ changes, since the
+external force due to gravity changes depending on the position of the arm $q$.
+The controller ends up having to use the accumulated integral to ``relearn'' the
+correct amount of extra force needed every time $q_d$ changes.
+
+In some robotics applications, the solution to this problem is to mathematically
+analyze the geometry and mass of the system and compute exactly how much extra
+force is needed.  In this particular case, the answer is straight-forward,
+in that the extra torque due to gravity is $\tau=m l g sin(q) / 2$, where
+$m$ is the mass of the arm, $l$ is the length, and $g$ is $9.8m/s^2$.  If the
+force applied by the motor is linear in $u$, then we could simply compute this
+value and add it to our controller's output.  However, this assumes a perfectly
+even distribution of weight in the arm, ignores momentum and other forces, and 
+gets much more complex as more joints are added.  Furthermore, if this
+initial computation is slightly off, or if details of the system change,
+there is no way to adjust this compensation.
+
+Fortunately, there is an adaptive solution to this problem, and it is one that
+fits well with neuromorphic hardware.  In \cite{Slotine1987}, Slotine shows that if you
+express the influence of these other external forces as $\tau=Y(q) \omega$
+(where $Y(q)$ is a fixed set of functions of $q$, such as $sin(q)$, and \omega
+is a vector of weights, one for each function in $Y$), then you can learn
+to compensate for these external forces by using the learning rule $\Delta \omega = \alpha Y(q) u$,
+where $u$ is the basic PD control signal.
+
+Importantly, as pointed out in [ref] and [ref], rather than making explicit
+assumptions about the exact functions that should be in $Y(q)$, we can use
+a neural network approach where each neuron is a different function of $q$.  
+As long as there is enough hetereogenetity (i.e. as long as the neural activity
+forms a basis space that spans the desired space of functions), then the
+learning rule will continue to work.  
+
+This then suggests an explicit neuromorphic benchmark.  The input to the
+neuromorphic hardware is $q$, the system state.  This input is fed to each
+neuron such that each neuron produces some output behaviour that is based on
+this input.  Since $q$ will be multi-dimensional (if there is more than one
+joint), we may give each neuron a random weighting of each $q$ value ($J_i=e_i \cdot q$, 
+where $J_i$ is the input to neuron $i$, and $e_i$ is a randomly chosen vector\footnote{$e$ could also be chosen so as to regularly span the space of possibilities}).  Given this input, the neurons will produce some output $A$.
+we now form a weighted sum of these outputs $Ad$, where $d$ is a matrix (number of neurons by number of elements in $q$)
+that is initially all zeros.
+
+To use this controller, we add its output to that of the standard PD controller.
+That is, the standard controller has $u=K_p(q_d - q) + K_d(\dot{q_d} - \dot{q})$,
+and so our actual output to the motor is $u + Ad$.  We then apply a learning
+rule on $d$ such that $\Delta d = \alpha A \times u$.
+
+Notice that we can think of this system as a three-layer neural
+network, where the input and output layers are linear.  The first layer is $q$, the input state, one value for each joint.  The ``hidden'' layer
+is $A$, the activity of a large number of neurons.  The output layer again has
+one value per joint, and is the extra added signal to apply to the motors, $Ad$.
+Given that this is such a canonical example of the use of neural networks, we
+hope that the majority of neuromorphic hardware is flexible enough to implement
+exactly this model.
+
+
+\subsection{Online versus offline learning}
+
+The one major step here that does not exist in a lot of neuromorphic hardware is
+the ability to update the weights $d$.  For hardware that does have a built-in
+learning rule, this rule is at least of a very common form, where the weight
+update from a neuron is proportional to the activity of that neuron and an
+external error signal.  This makes it an instance of the ubiquitous delta rule.
+
+However, if the neuromorphic hardware being benchmarked does not have the
+ability to update weights online using a learning rule of this form, then there
+are two solutions.  First, the multiplication by $d$ could be done on the
+output from the neuromorphic hardware.  There has to be some system to take
+the neural output from the hardware and send it to the motor (or the simulation
+of the motor).  Instead of outputing the result of $Ad$, the hardware could
+output $A$ (the activity of all the neurons), and the interface to the motor
+could be responsible for doing the multiplication by $d$ and updating $d$
+according to the learning rule.
+
+Alternatively, we can use offline learning.  That is, rather than updating
+the weights $d$ all the time, we simply record $A$ and $u$, and then after
+a period of time stop the controller, compute the sum total of the changes
+to $d$, load the new value of $d$ onto the neuromorphic hardware, and then
+start the controller again.
+
+
+
+
 
 
 
