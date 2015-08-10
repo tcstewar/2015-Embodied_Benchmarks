@@ -168,8 +168,8 @@ However, \emph{not} using a real physical embodiment for testing is also
 problematic.  First and foremost, without an actual real-world task, why
 should anyone have any confidence that the performance on the benchmark is
 reflective of the actual usefulness of the neuromorphic hardware?  It is
-very widely known that \emph{simulations of robots} (or other physical systems) are
-often much easier to control and better-behaved than the real thing.  The
+very widely known that simulations of robots (or other physical systems) are
+often \emph{much} easier to control and better-behaved than the real thing.  The
 field of robotics is filled with algorithms that work well ``in theory,'' but
 fail when run on actual hardware.  We do not want a benchmark that falls into
 this trap of failing to generalize to real situations.
@@ -213,7 +213,7 @@ the simulations were improved, adding complex physical detail, then it was
 possible to generalize to real behaviour; unfortunately, such complex
 simulations would run slower than real-time [refs].
 
-To address this problem, Nicholas Jacobi proposed the creation of
+To address this problem, \cite{Jakobi97evolutionaryrobotics} proposed the creation of
 ``minimal'' simulations.  These are simulations where there is variability
 \emph{within the simulation itself}.  In other words, we make \emph{poor}
 simulations, but ensure that the way in which it is poor is itself
@@ -234,8 +234,8 @@ on would all be randomly chosen.  A successful controller would have to deal
 with this wide range of variability, and if it could handle that variability
 then we would have reason to believe it could also handle the real system.
 
-It is also worth noting that a minimal simulation \emph{only has to be a
-good simulation for successful behaviour}.  That is, ``if we are evolving 
+It is also worth noting that a minimal simulation only has to be a
+good simulation \emph{for successful behaviour}.  That is, ``if we are evolving 
 corridor following behaviour, the dynamics of the simulation might
 differ wildly from those of reality if the controller hits a wall or
 goes round in circles, but this does
@@ -297,7 +297,7 @@ a simple robotics platform available at most toy stores.
 It is important to note that there is actually a theoretical advantage to
 using cheap robotics hardware for benchmarking, in addition to the practical
 advantages.  In particular, we \emph{don't want benchmarks that rely on
-particular high-speed, high-accuracy devices}.  The purpose of the benchmark
+high-speed, high-accuracy devices}.  The purpose of the benchmark
 is not to indicate how well this neuromorphic hardware works to control this
 one particular robot in this task.  Rather, the purpose of a benchmark is to
 characterise how well this neuromorphic hardware works on this task 
@@ -410,7 +410,7 @@ However, if the neuromorphic hardware being benchmarked does not have the
 ability to update weights online using a learning rule of this form, then there
 are two solutions.  First, the multiplication by $d$ could be done on the
 output from the neuromorphic hardware.  There has to be some system to take
-the neural output from the hardware and send it to the motor (or the simulation
+the neural output from the hardware and send it to the motor (or to the simulation
 of the motor).  Instead of outputing the result of $Ad$, the hardware could
 output $A$ (the activity of all the neurons), and the interface to the motor
 could be responsible for doing the multiplication by $d$ and updating $d$
@@ -461,7 +461,7 @@ by an amount of time $t_q$ and $t_u$.
 
 The result is not meant to be a simulation of a particular physical embodiment.
 Rather, the variability in this simulation is meant to be extremely fast
-to simulation, and to make it hard to ``cheat''
+to simulate, and to make it hard to ``cheat''
 to control it.  In other words, if a controller manages to be able to control
 the various randomly created minimal simulations of embodiment that are
 generated with this approach, then we have reason to believe that it will also
@@ -475,7 +475,7 @@ controller deals with these situations.
 Of course, we need physical confirmation that the minimal simulation defined
 in the previous section does a reasonable job.  For this, we define a
 particular easy-to-build example of a system that can be usefully controlled
-by this adaptive method.  For this, we use the Lego Mindstorms EV3 robot kit.
+by this adaptive method.  In particular, we use the Lego Mindstorms EV3 robot kit.
 
 The physical body is depicted in [TODO: add figure].  It consists of a single
 motor, mounted in such a way that there is a significant amount of weight on
