@@ -390,13 +390,14 @@ hope that the majority of neuromorphic hardware is flexible enough to implement
 exactly this model.
 
 
-\subsection{Online versus offline learning}
+\subsection{Online and offline learning}
 
 The one major step here that does not exist in a lot of neuromorphic hardware is
 the ability to update the weights $d$.  For hardware that does have a built-in
 learning rule, this rule is at least of a very common form, where the weight
 update from a neuron is proportional to the activity of that neuron and an
-external error signal.  This makes it an instance of the ubiquitous delta rule.
+external error signal.  This makes it an instance of the ubiquitous delta rule,
+and hopefully supported by the hardware.
 
 However, if the neuromorphic hardware being benchmarked does not have the
 ability to update weights online using a learning rule of this form, then there
