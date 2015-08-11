@@ -22,6 +22,8 @@ class SingleArmEV3(benchmark.Benchmark):
         self.default('n_neurons', n_neurons=500)
         self.default('learning rate', learning_rate=1.0)
         self.default('max_freq', max_freq=1.0)
+        self.default('synapse', synapse=0.01)
+        self.default('radius', radius=1.0)
 
     def model(self, p):
         link = ev3link.EV3Link(p.address)
@@ -52,14 +54,23 @@ class SingleArmEV3(benchmark.Benchmark):
             
             ev3 = nengo.Node(ev3_system, size_in=1, size_out=1)
             
-            if p.adapt:
-                pid = bench.pid.PDAdapt(1, p.Kp, p.Kd, tau_d=p.tau_d, learning_rate=p.learning_rate,
-                                        n_neurons=p.n_neurons)
-            else:
-                pid = bench.pid.PID(p.Kp, p.Kd, p.Ki, tau_d=p.tau_d)
+            #if p.adapt:
+            #    pid = bench.pid.PDAdapt(1, p.Kp, p.Kd, tau_d=p.tau_d, learning_rate=p.learning_rate,
+            #                            n_neurons=p.n_neurons)
+            pid = bench.pid.PID(p.Kp, p.Kd, p.Ki, tau_d=p.tau_d)
             control = nengo.Node(lambda t, x: pid.step(x[:1], x[1:]), size_in=2)
             nengo.Connection(ev3, control[:1], synapse=0)
             nengo.Connection(control, ev3, synapse=None)
+
+            if p.adapt:
+                adapt = nengo.Ensemble(p.n_neurons, dimensions=1, radius=p.radius)
+                nengo.Connection(ev3, adapt, synapse=None)
+                conn = nengo.Connection(adapt, ev3, synapse=p.synapse,
+                        function=lambda x: 0,
+                        learning_rule_type=nengo.PES())
+                conn.learning_rule_type.learning_rate *= p.learning_rate
+                nengo.Connection(control, conn.learning_rule, synapse=None,
+                        transform=-1)
             
             actual_time = nengo.Node(lambda t: time.time() - self.start_time,
                     size_in=0, size_out=1)
