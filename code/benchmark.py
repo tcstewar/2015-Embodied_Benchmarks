@@ -64,11 +64,15 @@ class Benchmark(object):
 
         name = self.__class__.__name__
         text = []
+        self.args_text = []
         for k in self.param_names:
             if k not in self.hidden_params:
                 text.append('%s=%s' % (k, getattr(args, k)))
+                self.args_text.append('_%s = %r' % (k, getattr(args, k)))
 
         filename = name + '#' + ','.join(text)
+
+        filename = name + '#' + time.strftime('%H%M%S')
 
         return args, filename
 
@@ -122,6 +126,7 @@ class Benchmark(object):
         text = []
         for k, v in sorted(result.items()):
             text.append('%s = %s' % (k, repr(v)))
+        text = self.args_text + text
         text = '\n'.join(text)
 
 
@@ -148,4 +153,6 @@ class Benchmark(object):
 
         if p.show_figs:
             plt.show()
+
+        return result
 
