@@ -4,6 +4,8 @@ import sys
 import numpy as np
 import pylab
 
+import bootstrapci
+
 path = sys.argv[1]
 
 data_x = []
@@ -24,12 +26,14 @@ for fn in os.listdir(path):
 #data_x = data_x[:30]
 #data_y = data_y[:30]
 
-do_gp = True
+data_x = np.array(data_x)
+data_y = np.array(data_y)
+
+do_gp = False
 
 pylab.figure(figsize=(8,4))
 
 if do_gp:
-    import pylab
     import GPy
 
     X = np.array(data_x)
@@ -63,7 +67,32 @@ if do_gp:
     m.plot()
 
 else:
-    pylab.scatter(data_x, data_y, marker='x', color='k')
+
+
+    '''
+    low = []
+    high = []
+    var = 0.0005
+    x = np.linspace(0, 0.04, 100)
+    for xx in x:
+        w = np.exp(-((data_x-xx)**2)/(2*var**2))
+        w /= sum(w)
+        samples = [np.random.choice(data_y, p=w) for i in range(200)]
+
+
+        #ci = bootstrapci.bootstrapci(samples, np.mean)
+        mean = np.mean(samples)
+        sd = np.std(samples)
+        ci = mean - 2*sd, mean+2*sd
+        low.append(ci[0])
+        high.append(ci[1])
+        print xx, ci
+
+    pylab.fill_between(x, low, high, color='#888888')
+    '''
+
+    pylab.scatter(data_x, data_y, s=30, marker='x', color='k')
+
 
 
 pylab.xlim(0, 0.04)
