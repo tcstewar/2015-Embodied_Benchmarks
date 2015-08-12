@@ -2,8 +2,11 @@ import time
 
 import nengo
 import numpy as np
-import embodied_benchmarks as bench
 
+
+from system import System
+from random_signal import Signal
+from pid import PID
 import benchmark
 
 class AdaptiveControl(benchmark.Benchmark):
@@ -31,7 +34,9 @@ class AdaptiveControl(benchmark.Benchmark):
         model = nengo.Network()
         with model:
 
-            system = bench.system.System(p.D, p.D, dt=p.dt, seed=p.seed, motor_noise=p.noise, sense_noise=p.noise, scale_add=p.scale_add,
+            system = System(p.D, p.D, dt=p.dt, seed=p.seed,
+                    motor_noise=p.noise, sense_noise=p.noise,
+                    scale_add=p.scale_add,
                     motor_scale=10,
                     motor_delay=p.delay, sensor_delay=p.delay,
                     motor_filter=p.filter, sensor_filter=p.filter)
@@ -41,13 +46,15 @@ class AdaptiveControl(benchmark.Benchmark):
 
             minsim = nengo.Node(minsim_system, size_in=p.D, size_out=p.D)
 
-            pid = bench.pid.PID(p.Kp, p.Kd, p.Ki, tau_d=p.tau_d)
-            control = nengo.Node(lambda t, x: pid.step(x[:p.D], x[p.D:]), size_in=p.D*2)
+            pid = PID(p.Kp, p.Kd, p.Ki, tau_d=p.tau_d)
+            control = nengo.Node(lambda t, x: pid.step(x[:p.D], x[p.D:]),
+                                 size_in=p.D*2)
             nengo.Connection(minsim, control[:p.D], synapse=0)
             nengo.Connection(control, minsim, synapse=None)
 
             if p.adapt:
-                adapt = nengo.Ensemble(p.n_neurons, dimensions=p.D, radius=p.radius)
+                adapt = nengo.Ensemble(p.n_neurons, dimensions=p.D,
+                                       radius=p.radius)
                 nengo.Connection(minsim, adapt, synapse=None)
                 conn = nengo.Connection(adapt, minsim, synapse=p.synapse,
                         function=lambda x: [0]*p.D,
@@ -56,20 +63,12 @@ class AdaptiveControl(benchmark.Benchmark):
                 nengo.Connection(control, conn.learning_rule, synapse=None,
                         transform=-1)
 
-            #actual_time = nengo.Node(lambda t: time.time() - self.start_time,
-            #        size_in=0, size_out=1)
-
-            signal = bench.signal.Signal(p.D, p.period, dt=p.dt, max_freq=p.max_freq, seed=p.seed)
-            #def desired_func(t, actual_t):
-            #    return signal.value(actual_t) * np.pi / 2
-            #desired = nengo.Node(desired_func, size_in=1)
+            signal = Signal(p.D, p.period, dt=p.dt, max_freq=p.max_freq, seed=p.seed)
             desired = nengo.Node(signal.value)
-            #nengo.Connection(actual_time, desired, synapse=None)
             nengo.Connection(desired, control[p.D:], synapse=None)
 
             self.p_desired = nengo.Probe(desired, synapse=None)
             self.p_q = nengo.Probe(minsim, synapse=None)
-            #self.p_t = nengo.Probe(actual_time, synapse=None)
             self.p_u = nengo.Probe(control, synapse=None)
         return model
 
@@ -106,12 +105,6 @@ class AdaptiveControl(benchmark.Benchmark):
             #plt.plot(np.correlate(d, q, 'full')[len(q):])
 
 
-        #rate = len(sim.data[self.p_t]) / p.T
-
-
-
-
-        #diff = d[:-offset] - q[offset:]
         diff = sim.data[self.p_desired][:-offset] - sim.data[self.p_q][offset:]
         diff = diff[N:]
         rmse = np.sqrt(np.mean(diff.flatten()**2))
