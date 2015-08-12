@@ -126,13 +126,15 @@ class Benchmark(object):
         text = []
         for k, v in sorted(result.items()):
             text.append('%s = %s' % (k, repr(v)))
-        text = self.args_text + text
-        text = '\n'.join(text)
 
 
         if plt is not None:
-            plt.suptitle(fn.replace('#', '\n') +'\n' + text,
+            plt.suptitle(fn.replace('#', '\n') +'\n' + '\n'.join(text),
                          fontsize=8)
+            plt.figtext(0.12,0.12,'\n'.join(self.args_text))
+
+        text = self.args_text + text
+        text = '\n'.join(text)
 
         if not os.path.exists(p.data_dir):
             os.mkdir(p.data_dir)

@@ -12,8 +12,7 @@ class AdaptiveControl(benchmark.Benchmark):
         self.default('Kd', Kd=1.0)
         self.default('Ki', Ki=0.0)
         self.default('tau_d', tau_d=0.001)
-        self.default('T', T=0.5)
-        self.default('desired path', path='random')
+        self.default('T', T=8.0)
         self.default('period', period=4.0)
         self.default('use adaptation', adapt=False)
         self.default('n_neurons', n_neurons=500)
@@ -51,7 +50,7 @@ class AdaptiveControl(benchmark.Benchmark):
                 adapt = nengo.Ensemble(p.n_neurons, dimensions=p.D, radius=p.radius)
                 nengo.Connection(minsim, adapt, synapse=None)
                 conn = nengo.Connection(adapt, minsim, synapse=p.synapse,
-                        function=lambda x: 0,
+                        function=lambda x: [0]*p.D,
                         learning_rule_type=nengo.PES())
                 conn.learning_rule_type.learning_rate *= p.learning_rate
                 nengo.Connection(control, conn.learning_rule, synapse=None,
@@ -85,14 +84,24 @@ class AdaptiveControl(benchmark.Benchmark):
         t = sim.trange()
 
         N = len(q) / 2
-        offset = benchmark.find_offset(q[N:], d[N:])
-        if offset == 0:
-            offset = 1
+
+        # find an offset that lines up the data best (this is the delay)
+        offsets = []
+        for i in range(p.D):
+            q = sim.data[self.p_q][:,i]
+            d = sim.data[self.p_desired][:,i]
+            offset = benchmark.find_offset(q[N:], d[N:])
+            if offset == 0:
+                offset = 1
+            offsets.append(offset)
+        offset = int(np.mean(offsets))
+        delay = p.dt * offset
 
         if plt is not None:
-            plt.plot(t[offset:], d[:-offset])
-            plt.plot(t[offset:], d[offset:])
-            plt.plot(t[offset:], q[offset:])
+            plt.plot(t[offset:], d[:-offset], label='$q_d$')
+            #plt.plot(t[offset:], d[offset:])
+            plt.plot(t[offset:], q[offset:], label='$q$')
+            plt.legend(loc='upper left')
 
             #plt.plot(np.correlate(d, q, 'full')[len(q):])
 
@@ -102,12 +111,10 @@ class AdaptiveControl(benchmark.Benchmark):
 
 
 
-        #delay = np.mean(t[offset:]-t[:-offset])
-        delay = p.dt * offset
-
-        diff = d[:-offset] - q[offset:]
+        #diff = d[:-offset] - q[offset:]
+        diff = sim.data[self.p_desired][:-offset] - sim.data[self.p_q][offset:]
         diff = diff[N:]
-        rmse = np.sqrt(np.mean(diff**2))
+        rmse = np.sqrt(np.mean(diff.flatten()**2))
 
 
         return dict(delay=delay, rmse=rmse)
