@@ -46,6 +46,8 @@ class AdaptiveControl(benchmark.Benchmark):
 
             minsim = nengo.Node(minsim_system, size_in=p.D, size_out=p.D)
 
+            state_node = nengo.Node(lambda t: system.state)
+
             pid = PID(p.Kp, p.Kd, p.Ki, tau_d=p.tau_d)
             control = nengo.Node(lambda t, x: pid.step(x[:p.D], x[p.D:]),
                                  size_in=p.D*2)
@@ -68,7 +70,7 @@ class AdaptiveControl(benchmark.Benchmark):
             nengo.Connection(desired, control[p.D:], synapse=None)
 
             self.p_desired = nengo.Probe(desired, synapse=None)
-            self.p_q = nengo.Probe(minsim, synapse=None)
+            self.p_q = nengo.Probe(state_node, synapse=None)
             self.p_u = nengo.Probe(control, synapse=None)
         return model
 
