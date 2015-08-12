@@ -72,7 +72,8 @@ class Benchmark(object):
 
         filename = name + '#' + ','.join(text)
 
-        filename = name + '#' + time.strftime('%H%M%S')
+        uid = np.random.randint(0x7FFFFFFF)
+        filename = name + '#' + time.strftime('%Y%m%d-%H%M%S')+('-%08x' % uid)
 
         return args, filename
 

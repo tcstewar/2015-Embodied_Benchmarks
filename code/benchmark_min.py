@@ -12,7 +12,7 @@ class AdaptiveControl(benchmark.Benchmark):
         self.default('Kd', Kd=1.0)
         self.default('Ki', Ki=0.0)
         self.default('tau_d', tau_d=0.001)
-        self.default('T', T=8.0)
+        self.default('T', T=10.0)
         self.default('period', period=4.0)
         self.default('use adaptation', adapt=False)
         self.default('n_neurons', n_neurons=500)
