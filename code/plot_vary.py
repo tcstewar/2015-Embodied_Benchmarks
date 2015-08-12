@@ -42,34 +42,44 @@ if do_gp:
     Y.shape = Y.shape[0], 1
 
 
-    kernel = GPy.kern.RBF(input_dim=1, variance=1, lengthscale=0.005)
+    #kernel = GPy.kern.RBF(input_dim=1, variance=.3, lengthscale=0.5)
     #kernel = kernel+GPy.kern.RBF(input_dim=1, variance=1, lengthscale=0.005)
     #kernel = GPy.kern.Linear(1)
     #kernel = GPy.kern.Brownian(1)
-    m = GPy.models.GPRegression(X, Y,kernel)
+    #m = GPy.models.GPRegression(X, Y,kernel)
     #m = GPy.models.SparseGPRegression(X, Y,kernel)
     #m = GPy.models.GPCoregionalizedRegression([X], [Y],kernel)
     #m = GPy.models.GPHeteroscedasticRegression(X, Y,kernel)
     #m = GPy.models.GPVariationalGaussianApproximation(X, Y, kernel)
     #m = GPy.models.SparseGPRegression(X,Y,Z=np.random.rand(10,1)*0.04, kernel=kernel)
-    m.optimize('bfgs', messages=True)
+    #m.optimize('bfgs', messages=True)
     #m.optimize('tnc', messages=True)
 
     #print help(m.optimize)
-
-
+    
     #m.optimize('bfgs', max_iters=100)
     #m.optimize_restarts(num_restarts=10)
-    m.optimize()
+    #m.optimize()
 
-    print m
-
-    m.plot()
+    m = GPy.models.GPRegression(X,Y)
+    #m.rbf.lengthscale=.001
+    #m.rbf.variance=.009
+    
+    print m, '\n'
+    for i in range(5):
+        m.optimize('bfgs', max_iters=100) #first runs EP and then optimizes the kernel parameters
+        print 'iteration:', i,
+        print m
+        print ""
+    
+    #m.optimize(messages=True)
+    #m.optimize_restarts(num_restarts=10)
+    
+    m.plot() #posterior over the data
+    #m.plot_f() #The posterior
 
 else:
 
-
-    '''
     low = []
     high = []
     var = 0.0005
@@ -89,12 +99,11 @@ else:
         print xx, ci
 
     pylab.fill_between(x, low, high, color='#888888')
-    '''
 
     pylab.scatter(data_x, data_y, s=30, marker='x', color='k')
 
 
-
+pylab.plot(data_x,data_y, 'kx')
 pylab.xlim(0, 0.04)
 pylab.xlabel('delay (s)')
 pylab.ylabel('rmse')
