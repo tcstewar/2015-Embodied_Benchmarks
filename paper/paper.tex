@@ -106,12 +106,13 @@ interactive functionality is feasible with these devices.
 To evaluate applications of this hardware, we need benchmark tasks.  These
 tasks must allow us to compare across different instances of neuromorphic
 hardware (and potentially across different algorithms implemented in said
-hardware).  This allows us to quantitatively compare systems, letting 
+hardware).  Having such a metric across instances and algorithms will allow us
+to quantitatively compare systems, letting
 researchers both measure the progress in the field and also directly
 compare competing approaches.
 
 In this paper, we focus on the development of \emph{embodied} benchmarks.
-These are tasks where the output of the neuromorphic hardware \emph{influences
+These are dynamic tasks where the output of the neuromorphic hardware \emph{influences
 its own future input}.  This is in contrast to standard categorization or pattern
 identification tasks, where the input is some fixed sequence, and the main
 question is whether the hardware produces the correct output for each input
@@ -178,21 +179,23 @@ Furthermore, neuromorphic hardware has another constraint that severely limits
 the possibilities of simulation.  The normal approach when a simulation is
 too simple to reflect reality is to add details to the simulation itself.
 Incredibly finely detailed simulations can be created, filling in all of the
-details needed.  However, those resulting simulations \emph{cannot be run
-in real-time}.  This is a fundamental problem, in that most neuromorphic
+details needed.  However, accurate modelling of physical systems can very quickly
+become \emph{impractical to run in realtime}.
+This is a fundamental problem, in that most neuromorphic
 hardware is about real-time interactions, and there is no way to slow down
 the hardware to match the simulated environment.  This means that even if
 we spent the considerable amount of research effort needed to define a
-simulated environment for an embodied benchmark, that simulation could not
-be run fast enough to interact with most of the hardware that we would want
-to test.
+simulated environment for an embodied benchmark, running that simulation 
+fast enough to interact with most of the desired hardware would require more
+resources than are available.
 
 \subsection{Minimal Simulation}
 
 The above considerations seem to indicate that even though using real-world
-phyiscal hardware for benchmarking is problematic, it is still better than
+physical hardware for benchmarking is problematic, it is still better than
 using simplistic simulations which may not generalize to real tasks.  However,
-we believe there is an alternate approach known as \emph{Minimal Simulation}
+we believe that the solution lies in an alternate approach taken from the
+field of evolutionary robotics, known as \emph{Minimal Simulation}
 (\citealt{Jakobi97evolutionaryrobotics}).
 
 First, we note that the problem faced here is remarkably similar to a problem
