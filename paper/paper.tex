@@ -505,7 +505,7 @@ modern computers, we can easily simulate in real-time systems with dozens of joi
 highly complex interactions between them, and measure how well an adaptive
 controller deals with these situations.
 
-\subsection{Cheap Robotics for Adaptive Control}
+\subsection{Calibrating the Minimal Simulation via Cheap Robotics}
 
 Of course, we also want an indication that the minimal simulation defined
 in the previous section is reasonably representative of the sorts of real-world
@@ -568,9 +568,9 @@ cases.
 For sensor noise, we note that the EV3 rotation encoders for the motors (the
 devices that measure $q$) have a resolution of 0.0175 (1 degree).  This is a
 very different sort of noise than the gaussian noise used in the simulation,
-so we set the simulation noise to be much larger (uniformly distributed
+so we set the simulation noise $\sigma_q$ to be much larger (uniformly distributed
 between 0 and 0.1).  Similarly, the motor resolution is 0.01, as it accepts 
-integer values up to 100, so we set the motor noise to be uniform between
+integer values up to 100, so we set the motor noise $\sigma_u$ to be uniform between
 0 and 0.1.
 
 Finally, we can use the physical system to calibrate the relationship between
