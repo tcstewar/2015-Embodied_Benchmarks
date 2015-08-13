@@ -180,7 +180,7 @@ the possibilities of simulation.  The normal approach when a simulation is
 too simple to reflect reality is to add details to the simulation itself.
 Incredibly finely detailed simulations can be created, filling in all of the
 details needed.  However, accurate modelling of physical systems can very quickly
-become \emph{impractical to run in realtime}.
+become \emph{impractical to run in real time}.
 This is a fundamental problem, in that most neuromorphic
 hardware is about real-time interactions, and there is no way to slow down
 the hardware to match the simulated environment.  This means that even if
@@ -259,10 +259,25 @@ so as long as that result is indicated we can greatly simplify the simulation
 by not including all the details necessary to deal with these sorts of physical
 interactions.
 
+\subsection{Minimal Simulation as a Benchmark}
+
 Given the success of this approach for evolutionary robotics, we propose
-that it can be directly used for embodied neuromorphic benchmarks.  To do
-this, we create software simulations for each benchmark task.  These simulations
-must be fast enough to run in realtime (so that they can be controlled by
+using a minimal simulation as a neuromorphic benchmark.  First, we note that
+one important use of a benchmark is that by knowing how well particular
+hardware performs on that benchmark, you can reasonably infer how well
+that hardware will perform in other situations.  For example, if an image recognition
+algorithm performs well on the MNIST hand-written digit recognition
+benchmark, we can use that knowledge to guess that it may also perform well on
+a different recognition task.  Of course, this inference will fail if that
+algorithn has been specifically over-fit to exactly that one situtation.  For
+that reason, it would be useful to have a benchmark that covers a large range
+of variations on the task.  If the hardware performs well across that
+variability, then it is more likely to also work in whatever new situation we
+want to use it in.
+
+To achieve this, we need software simulations of the environment for the task.
+These simulations
+must be fast enough to run in real time (so that they can be controlled by
 real neuromorphic hardware), and they must be extremely variable.  Each time
 the simulation is run, different parameters will be chosed for this variability
 (so one run might have a large degree of sensor noise while the next run has
@@ -282,14 +297,18 @@ siuations where their hardware excells.
 
 \subsection{Cheap Robotics}
 
-All of that said, we also need real physical embodiment as part of any
-benchmark of this kind.  While we claim that reliable minimal simulations
-are relatively easy to create, they are not a widely-used technique, and the
-real proof of behaviour is always in the real world.  For this reason, we
-also argue that every benchmark based on a minimal simulation should also
-have an easy-to-construct physical analog.  However, this physical version
-is not to be used as the primary benchmark.  Rather, this is meant as a
-double-check that the system does actually behave as expected.  
+The minimal simulation described above forms the core of our benchmark.
+However, the point of that benchmark is that is should do a reasonable job
+of generalizing to real-world physical tasks.  It is then useful to
+supplement that simulation benchmark with at least one easy-to-construct 
+physical analog.  This physical version would be one particular instance of the
+type of situation the benchmark is meant to cover.  For that reason, it
+is much more restrictive in terms of what general conclusions can be drawn
+from how well different hardware performs in that situation.  Rather, it is
+gives an explicit and understandable double-check that models that perform
+well on the simulation benchmark also perform well in a physical environment.
+Even considering the advantages of benchmarking using minimal simulations,
+it is still useful to have a real physical point of comparison as well.
 
 For this physical aspect of the benchmark, we recommend cheap, widely-available
 components.  This allows a greater chance for other researchers to have
@@ -319,8 +338,8 @@ To demonstrate this approach to creating embodied neuromorphic benchmarks,
 we now consider a basic control task.  Suppose we have a system with a number
 of joints $q$ and we want to send an output $u$ to those motors such that
 the joints move to a particular desired position $q_d$.  Our only output is
-the signal $u$ (one for each motor) and our only input is the current position
-of each motor $q$.
+the signal $u$ (one for each motor) and our only inputs are the current position
+of each motor $q$ and the desired positions $q_d$.
 
 The simplest controller for such a situation is a P (proportional) controller,
 where $u=K_p(q_d - q)$.  This is often supplemented with a D (derivative) term,
@@ -345,7 +364,7 @@ how much extra force is being applied until it is large enough to counteract
 the external force of gravity (or whatever other external forces are present).
 However, this approach has great difficulty when $q_d$ changes, since the
 external force due to gravity changes depending on the position of the arm $q$.
-The controller ends up having to use the accumulated integral to ``relearn'' the
+The controller ends up having to ``relearn'' the
 correct amount of extra force needed every time $q_d$ changes.
 
 In some robotics applications, the solution to this problem is to mathematically
@@ -372,10 +391,11 @@ Importantly, as pointed out by \cite{SannerSlotine1992} and \cite{Lewis1996}, ra
 assumptions about the exact functions that should be in $Y(q)$, we can use
 a neural network approach where each neuron is a different function of $q$.  
 As long as there is enough hetereogenetity (i.e. as long as the neural activity
-forms a basis space that spans the desired space of functions), then the
-learning rule will continue to work.  This approach has been used in the
+forms a basis space that is capable of approximating the external forces), then the
+learning rule will continue to work.  This approach has been extended to
+biologically plausible neurons and been used in both the
 Recurrent Error-driven Adaptive Control Hierarchy model of human motor control
-(\citealt{dewolf2014}), and for quadcopter control [TODO: any citations for this?].
+(\citealt{dewolf2014}) and quadcopter control (\citealt{KomerThesis}).
 
 This then suggests an explicit neuromorphic benchmark.  The input to the
 neuromorphic hardware is $q$, the system state.  This input is fed to each
@@ -383,7 +403,7 @@ neuron such that each neuron produces some output behaviour that is based on
 this input.  Since $q$ will be multi-dimensional (if there is more than one
 joint), we may give each neuron a random weighting of each $q$ value ($J_i=e_i \cdot q$, 
 where $J_i$ is the input to neuron $i$, and $e_i$ is a randomly chosen vector\footnote{$e$ could also be chosen so as to regularly span the space of possibilities}).  Given this input, the neurons will produce some output $A$.
-we now form a weighted sum of these outputs $Ad$, where $d$ is a matrix (number of neurons by number of elements in $q$)
+We now form a weighted sum of these outputs $Ad$, where $d$ is a matrix (number of neurons by number of elements in $q$)
 that is initially all zeros.
 
 To use this controller, we add its output to that of the standard PD controller.
@@ -446,14 +466,22 @@ This results in the simplistic simulation as follows:
     \Delta q & = v
 \end{align}
 
-On top of this, we need to add the external force for which the adaptive system
-is trying to compensate.  Rather than deciding on what specific external
-force, we \emph{randomly generate} an equation controlling this force.  We start with a small set of
-smooth functions on $X$ which are often found in dynamics equations ($x$, $x^2$,
-$sin(x)$).  We then generate an external force of $Q (\zeta X(\beta q + \gamma) + \eta)$
-where $\zeta$, $\beta$, $\gamma$, and $\eta$ are all randomly chosen fron $N(0,1)$
-and $Q$ is a scaling factor to control how strong this external force is.  The
-result is added to Equation 1.
+On top of this, we need to add an external perturbing force.  In a real system,
+this could be the effects of gravity given the current configuration of the
+motors, or of other unexpected influences.  
+Rather than chosing one particular fixed external force for our benchmark,
+we \emph{randomly generate} this force each time the benchmark is run.  
+
+We start with a small set of
+smooth functions $f$ which are often found in dynamics equations (e.g. $x$, $x^2$,
+$sin(x)$).  We then generate an external force of $K_f (\zeta \cdot f(\beta \cdot q + \gamma) + \eta)$
+where $\zeta$, $\beta$, $\gamma$, and $\eta$ are all random vectors and
+$K_f$ is a scaling factor to control how strong this external force is.  The
+result is added to Equation 1.  Note that this means that if $q$ is 4-dimensional
+(i.e. if there are four joints being controlled) and if there are three smooth
+functions in $f$ (as there are here), then $\beta$, $\gamma$, and $\eta$ are 
+all vectors of length 4 and $\zeta$ is a 4x12 matrix.  All of these values are
+randomly chosen from the normal distribution $N(0,1)$.
 
 Finally, we add random noise, delay, and filtering to both the input and the
 output of the system.  For noise, we add $N(0,\sigma_u)$ to the control signal
@@ -475,12 +503,28 @@ controller deals with these situations.
 
 \subsection{Cheap Robotics for Adaptive Control}
 
-Of course, we need physical confirmation that the minimal simulation defined
-in the previous section does a reasonable job.  For this, we define a
-particular easy-to-build example of a system that can be usefully controlled
-by this adaptive method.  In particular, we use the Lego Mindstorms EV3 robot kit.
+Of course, we also want an indication that the minimal simulation defined
+in the previous section is reasonably representative of the sorts of real-world
+situations in which we might want to use these controllers.  Importantly, 
+this physical instantiation does not have to exactly match one particular
+parameter setting of the minimal simulation.  Rather, we want a physical system
+that shares basic functional similarities to the minimal simulation defined
+previously.
 
-The physical body is depicted in [TODO: add figure].  It consists of a single
+For example, we want the inputs to the system to act like $u$, in that a
+positive number will increase some velocity $v$ which will in turn increase some
+sensor value $q$.  We want there to be some sort of external force applied that
+affects $q$, and we want that external force itself to be a function of $q$.
+We want there to be communication delays and noise in the sensory and motor
+system, and we want all of these effects to be somewhere within the extreme
+ranges covered by the minimal simulation.  While this cannot prove that hardware
+that is successful in simulation will always be successful in any similar
+real-world task, it at least gives an existence proof that there is at least
+one real-world task where it also performs reasonably.
+
+For this demonstration, we define an easy-to-build example of a system that can be usefully controlled
+by this adaptive method.  In particular, we use the Lego Mindstorms EV3 robot kit,
+organized as shown in [TODO: add figure].  It consists of a single
 motor, mounted in such a way that there is a significant amount of weight on
 the arm itself (the weight of the motor itself).  Multiple motors can be
 added, and other configurations can be considered and should also be suitable
@@ -517,7 +561,7 @@ its control signal $u$ to compensate for the unknown external forces.
 
 - number of motors $N$
 
-- magnitude of nonlinearity $Q$
+- magnitude of nonlinearity $K_f$
 
 CPU, GPU, and SpiNNaker?
 
