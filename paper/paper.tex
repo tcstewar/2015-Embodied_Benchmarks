@@ -562,7 +562,8 @@ the simulation.  For example, communication with the EV3 happens around
 200Hz, meaning that there must be a delay on the order of 0.005 seconds.  Given
 this, we set the delays in the simulation to be uniformly chosen between
 0 and 0.01.  Importantly, we do not need to exactly measure the delay in the
-EV3 robot --- we just make sure that the minimal simulation is worse.
+EV3 robot --- we just make sure that the minimal simulation covers even worse
+cases.
 
 For sensor noise, we note that the EV3 rotation encoders for the motors (the
 devices that measure $q$) have a resolution of 0.0175 (1 degree).  This is a
