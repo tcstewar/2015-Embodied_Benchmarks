@@ -44,16 +44,16 @@ class AdaptiveControl(benchmark.Benchmark):
             def minsim_system(t, x):
                 return system.step(x)
 
-            minsim = nengo.Node(minsim_system, size_in=p.D, size_out=p.D)
+            minsim = nengo.Node(minsim_system, size_in=p.D, size_out=p.D*2)
 
             pid = PID(p.Kp, p.Kd, p.Ki, tau_d=p.tau_d)
             control = nengo.Node(lambda t, x: pid.step(x[:p.D], x[p.D:]),
                                  size_in=p.D*2)
-            nengo.Connection(minsim, control[:p.D], synapse=0)
+            nengo.Connection(minsim[:p.D], control[:p.D], synapse=0)
             nengo.Connection(control, minsim, synapse=None)
 
             if p.adapt:
-                adapt = nengo.Ensemble(p.n_neurons, dimensions=p.D,
+                adapt = nengo.Ensemble(p.n_neurons, dimensions=p.D*2,
                                        radius=p.radius)
                 nengo.Connection(minsim, adapt, synapse=None)
                 conn = nengo.Connection(adapt, minsim, synapse=p.synapse,

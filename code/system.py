@@ -3,7 +3,7 @@ import numpy as np
 class System(object):
     def __init__(self, d_state, d_motor, dt=0.001, seed=None,
             scale_mult=1, scale_add=1, diagonal=True,
-            sense_noise=0.1, motor_noise=0.1,
+            sense_noise=0.1, vel_sense_noise=0, motor_noise=0.1,
             motor_delay=0, motor_filter=None,
             scale_inertia=0, motor_scale=1.0,
             sensor_delay=0, sensor_filter=None,
@@ -18,6 +18,7 @@ class System(object):
 
         sensor_steps = int(sensor_delay / dt) + 1
         self.sensor_delay = np.zeros((sensor_steps, d_state), dtype=float)
+        self.vel_sensor_delay = np.zeros((sensor_steps, d_state), dtype=float)
         motor_steps = int(motor_delay / dt) + 1
         self.motor_delay = np.zeros((motor_steps, d_motor), dtype=float)
         self.sensor_index = 0
@@ -25,6 +26,7 @@ class System(object):
         self.scale_inertia = scale_inertia
 
         self.sensor = np.zeros(d_state, dtype=float)
+        self.vel_sensor = np.zeros(d_state, dtype=float)
         self.motor = np.zeros(d_motor, dtype=float)
         if sensor_filter is None or sensor_filter < dt:
             self.sensor_filter_scale = 0.0
@@ -42,6 +44,7 @@ class System(object):
         else:
             self.J = self.rng.randn(d_motor, d_state) * scale_mult
         self.sense_noise = sense_noise
+        self.vel_sense_noise = vel_sense_noise
         self.motor_noise = motor_noise
 
         self.nonlinear = nonlinear
@@ -88,7 +91,12 @@ class System(object):
         sensor = self.state + self.rng.randn(self.d_state) * self.sense_noise
         self.sensor = (self.sensor * self.sensor_filter_scale +
                        sensor * (1.0 - self.sensor_filter_scale))
+        
+        vel_sensor = self.dstate * self.dt + self.rng.randn(self.d_state) * self.vel_sense_noise            
+        self.vel_sensor = (self.vel_sensor * self.sensor_filter_scale +
+                       vel_sensor * (1.0 - self.sensor_filter_scale))
 
         self.sensor_delay[self.sensor_index] = self.sensor
+        self.vel_sensor_delay[self.sensor_index] = self.vel_sensor
         self.sensor_index = (self.sensor_index + 1) % len(self.sensor_delay)
-        return self.sensor_delay[self.sensor_index]
+        return self.sensor_delay[self.sensor_index], self.vel_sensor_delay[self.sensor_index]
