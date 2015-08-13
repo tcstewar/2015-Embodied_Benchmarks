@@ -99,4 +99,4 @@ class System(object):
         self.sensor_delay[self.sensor_index] = self.sensor
         self.vel_sensor_delay[self.sensor_index] = self.vel_sensor
         self.sensor_index = (self.sensor_index + 1) % len(self.sensor_delay)
-        return self.sensor_delay[self.sensor_index], self.vel_sensor_delay[self.sensor_index]
+        return np.concatenate([self.sensor_delay[self.sensor_index], self.vel_sensor_delay[self.sensor_index]])

@@ -16,6 +16,7 @@ class AdaptiveControl(benchmark.Benchmark):
         self.default('Ki', Ki=0.0)
         self.default('tau_d', tau_d=0.001)
         self.default('T', T=10.0)
+        self.default('path', path='random')
         self.default('period', period=4.0)
         self.default('use adaptation', adapt=False)
         self.default('n_neurons', n_neurons=500)
@@ -62,9 +63,23 @@ class AdaptiveControl(benchmark.Benchmark):
                 conn.learning_rule_type.learning_rate *= p.learning_rate
                 nengo.Connection(control, conn.learning_rule, synapse=None,
                         transform=-1)
+                        
+            if p.path == 'random':
+                signal = Signal(p.D, p.period, dt=p.dt, max_freq=p.max_freq, seed=p.seed)
+                def desired_func(t):
+                    return signal.value(t) * np.pi / 2
 
-            signal = Signal(p.D, p.period, dt=p.dt, max_freq=p.max_freq, seed=p.seed)
-            desired = nengo.Node(signal.value)
+            elif p.path == 'step':
+                def desired_func(t):
+                    t = (t % p.period) / p.period
+                    if 0.25 < t < 0.5:
+                        return -np.pi / 2, -np.pi / 2
+                    elif 0.75 < t < 1.0:
+                        return np.pi / 2, np.pi / 2
+                    else:
+                        return 0, 0
+            
+            desired = nengo.Node(desired_func)
             nengo.Connection(desired, control[p.D:], synapse=None)
 
             self.p_desired = nengo.Probe(desired, synapse=None)
@@ -104,8 +119,8 @@ class AdaptiveControl(benchmark.Benchmark):
 
             #plt.plot(np.correlate(d, q, 'full')[len(q):])
 
+        diff = sim.data[self.p_desired][:-offset] - sim.data[self.p_q][offset:][:,:p.D]
 
-        diff = sim.data[self.p_desired][:-offset] - sim.data[self.p_q][offset:]
         diff = diff[N:]
         rmse = np.sqrt(np.mean(diff.flatten()**2))
 
