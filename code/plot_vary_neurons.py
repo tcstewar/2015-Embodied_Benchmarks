@@ -18,7 +18,10 @@ for fn in os.listdir(path):
         with open(os.path.join(path, fn)) as f:
             text = f.read()
         d = dict()
-        exec(text, d)
+        try:
+            exec(text, d)
+        except:
+            continue
 
         x = d['_n_neurons']
         y = d['rmse']

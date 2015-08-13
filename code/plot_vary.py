@@ -6,7 +6,10 @@ import pylab
 
 import bootstrapci
 
+do_logx = True
+
 path = sys.argv[1]
+xkey = sys.argv[2]
 
 data_x = []
 data_y = []
@@ -17,11 +20,17 @@ for fn in os.listdir(path):
         d = dict()
         exec(text, d)
 
-        x = d['_delay']
+        x = d['_' + xkey]
         y = d['rmse']
+
+        if do_logx:
+            x = np.log2(x)
+        if y > 1.0:
+            continue
 
         data_x.append(x)
         data_y.append(y)
+        print x, y
 
 #data_x = data_x[:30]
 #data_y = data_y[:30]
@@ -31,7 +40,7 @@ data_y = np.array(data_y)
 
 do_gp = False
 
-pylab.figure(figsize=(8,4))
+pylab.figure(figsize=(8,5))
 
 if do_gp:
     import GPy
@@ -69,33 +78,29 @@ if do_gp:
 else:
 
 
-    '''
+    def weighted_avg_and_std(values, weights):
+        average = np.average(values, weights=weights)
+        variance = np.average((values-average)**2, weights=weights)
+        return (average, np.sqrt(variance))
+
     low = []
     high = []
-    var = 0.0005
-    x = np.linspace(0, 0.04, 100)
+    var = float(sys.argv[3])
+    x = np.linspace(min(data_x), max(data_x), 100)
     for xx in x:
         w = np.exp(-((data_x-xx)**2)/(2*var**2))
-        w /= sum(w)
-        samples = [np.random.choice(data_y, p=w) for i in range(200)]
-
-
-        #ci = bootstrapci.bootstrapci(samples, np.mean)
-        mean = np.mean(samples)
-        sd = np.std(samples)
-        ci = mean - 2*sd, mean+2*sd
+        mean, sd = weighted_avg_and_std(data_y, w)
+        ci = mean - 1*sd, mean+1*sd
         low.append(ci[0])
         high.append(ci[1])
-        print xx, ci
 
-    pylab.fill_between(x, low, high, color='#888888')
-    '''
+    pylab.fill_between(x, low, high, color='#aaaaaa')
 
     pylab.scatter(data_x, data_y, s=30, marker='x', color='k')
 
 
 
-pylab.xlim(0, 0.04)
-pylab.xlabel('delay (s)')
+#pylab.xlim(0, )
+#pylab.xlabel('delay (s)')
 pylab.ylabel('rmse')
-pylab.savefig('plot_vary.png', dpi=100)
+pylab.savefig(path + '.png', dpi=100)

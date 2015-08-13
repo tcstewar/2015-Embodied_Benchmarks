@@ -9,6 +9,11 @@ from random_signal import Signal
 from pid import PID
 import benchmark
 
+class ZeroDecoder(nengo.solvers.Solver):
+    weights = False
+    def __call__(self, A, Y, rng=None, E=None):
+        return np.zeros((A.shape[1], Y.shape[1]), dtype=float), []
+
 class AdaptiveControl(benchmark.Benchmark):
     def params(self):
         self.default('Kp', Kp=2.0)
@@ -55,11 +60,14 @@ class AdaptiveControl(benchmark.Benchmark):
             nengo.Connection(control, minsim, synapse=None)
 
             if p.adapt:
+
+
                 adapt = nengo.Ensemble(p.n_neurons, dimensions=p.D,
                                        radius=p.radius)
                 nengo.Connection(minsim, adapt, synapse=None)
                 conn = nengo.Connection(adapt, minsim, synapse=p.synapse,
                         function=lambda x: [0]*p.D,
+                        solver=ZeroDecoder(),
                         learning_rule_type=nengo.PES())
                 conn.learning_rule_type.learning_rate *= p.learning_rate
                 nengo.Connection(control, conn.learning_rule, synapse=None,
