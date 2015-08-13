@@ -24,7 +24,7 @@
 
 \def\keyFont{\fontsize{8}{11}\helveticabold }
 \def\firstAuthorLast{Stewart {et~al.}} %use et al only if is more than 1 author
-\def\Authors{Terrence C. Stewart\,$^{1,*}$, Ashley Kleinhans\,$^{2}$ and Chris Eliasmith\,$^1$}
+\def\Authors{Terrence C. Stewart\,$^{1,*}$, Travis DeWolf\,$^{1}$, Ashley Kleinhans\,$^{2}$ and Chris Eliasmith\,$^1$}
 % Affiliations should be keyed to the author's name with superscript numbers and be listed as follows: Laboratory, Institute, Department, Organization, City, State abbreviation (USA, Canada, Australia), and Country (without detailed address information such as city zip codes or street names).
 % If one of the authors has a change of address, list the new address below the correspondence details using a superscript symbol and use the same symbol to indicate the author in the author list.
 \def\Address{$^{1}$Centre for Theoretical Neuroscience, University of Waterloo,
@@ -78,16 +78,17 @@ $^{2}$Mobile Intelligent Autonomous Systems group,
     Evaluating the effectiveness and performance of neuromorphic hardware is
     difficult.  It is even more difficult when the task of interest is an
     embodied task; that is, a task where the output from the neuromorphic
-    hardware affects its future input.  However, these embodied situations
+    hardware affects its future input through some environment.  However, embodied situations
     are one of the primary potential uses of neuromorphic hardware.  To address
-    this, we present a methodology for embodied benchmarking and a particular
-    example of a benchmark for adaptive control of an arbitrary system.  These
-    benchmarks are flexible, in that they allow researchers to explicitly
+    this, we present a methodology for embodied benchmarking that makes use
+    of a hybrid of real physical embodiment and a type of ``minimal'' simulation.
+    Minimal simulation has been shown to lead to robust real-world performance,
+    while still maintaining the practical advantages of simulation, such as
+    making it easy for the same benchmark to be used by many researchers.
+    These benchmarks are flexible, in that they allow researchers to explicitly
     modify the benchmark to identify particular task domains where particular
-    hardware excels.  Furthermore, the benchmarks make use of a hybrid of
-    real physical embodiment and a type of ``minimal'' simulation that has been
-    shown to lead to robust real-world performance, allowing the same benchmark
-    to be used by many researchers.
+    hardware excels.  To demonstrate the method, we present a novel benchmark
+    where the task is to perform motor control on an arbitrary unknown system.
 
 \tiny
  \keyFont{ \section{Keywords:} neuromorphic hardware, benchmarking, 
@@ -99,34 +100,33 @@ $^{2}$Mobile Intelligent Autonomous Systems group,
 Neuromorphic hardware holds great promise for a wide variety of applications.
 The combination of massively parallel computation and low power consumption
 means that there is the potential to have complex algorithms running in
-embedded processing situations, without being a significant drain on battery
-life.  The question, of course, is to identify what sort of always-on or
-interactive functionality is feasible with these devices.
+embedded processing situations, without being a significant drain on available
+energy.  A crucial challenge is to identify what sort of always-on or
+interactive functionality can best exploit these devices.
 
-To evaluate applications of this hardware, we need benchmark tasks.  These
+To evaluate applications of neuromorphic hardware, we need benchmark tasks.  These
 tasks must allow us to compare across different instances of neuromorphic
-hardware (and potentially across different algorithms implemented in said
-hardware).  Having such a metric across instances and algorithms will allow us
-to quantitatively compare systems, letting
-researchers both measure the progress in the field and also directly
+hardware (and potentially across different algorithms implemented in that
+hardware).  Good benchmarks will allow us to quantitatively compare systems, letting
+researchers both measure the progress in the field, and also directly
 compare competing approaches.
 
 In this paper, we focus on the development of \emph{embodied} benchmarks.
 These are dynamic tasks where the output of the neuromorphic hardware \emph{influences
-its own future input}.  This is in contrast to standard categorization or pattern
-identification tasks, where the input is some fixed sequence, and the main
-question is whether the hardware produces the correct output for each input
-(or input pattern).
+its own future input} through some environment.  This is in contrast to standard categorization or pattern
+identification tasks, where the input is some fixed sequence and the hardware
+must produce the correct output for each input (or input pattern).
 
 We believe embodied benchmarks should be of particular interest to
-neuromorphic research, given that many of the applications of neuromorphic
-hardware are in exactly this domain of embedded and interactive control
-of robotic or other physical systems.  However, embodiment raises a number
+neuromorphic research, given that the most compelling applications of neuromorphic
+hardware are likely to be in this domain of embedded and interactive control
+of robotic or other physical systems.  However, embodiment itself raises a number
 of issues that complicate the development of such benchmarks.  Rather than
 simply providing a data file of inputs and desired outputs, the benchmark
 must either specify a full physical system for that embodiment, or it must 
-provide software for a simulation of that system.  As we discuss below, either
-approach is problematic, and addressing this difficulty is the primary goal of
+provide software for a simulation of that system.  As we discuss below, both
+approaches are problematic.  
+Describing a method for overcoming these shortcomings is the primary goal of
 this paper.
 
 
@@ -134,59 +134,60 @@ this paper.
 
 An embodied benchmark task is one where the system we are studying has a 
 two-way interaction with some sort of environment.  That is, the outputs from
-the neuromorphic hardware are sent to the environment where they cause some
-sort of effect, the results of which change the subsequent input.  For example,
+the neuromorphic hardware are sent to the environment where they cause
+an effect, the results of which change the subsequent input.  For example,
 the outputs might control the movement of a robot, which in turn affects the
 sensory data received by the robot.
 
 \subsection{Simulation versus Physical Instantiation}
 
 To define such a benchmark, we need to be explicit about the embodiment.  If
-it is a situation where a robot is to be controlled, we need to be explicit
-about all the details of that robot.  What motors are there?  How are they
+a robot is to be controlled, we need to be explicit
+about all of the details of that robot.  What motors does it have?  How are they
 configured?  How strong are they?  What sensors are there?  Where are they
 placed?  How accurate are they?  However, even if these questions are
 answered, there is a fundamental problem in that \emph{other researchers
 need access to that exact robot}.  If a benchmark is to be widely used, other
-researchers developing their own hardware should be able to do their own 
-testing.
+researchers developing their own neuromorphic hardware should be able to do their own 
+testing on the same benchmark system.
 
-Furthermore, using a physical robot also imposes significant practical
+Furthermore, using a physical robot imposes significant practical
 difficulties when performing extensive benchmark testing.  When testing, we
 often want to run the same task over and over again, both for robustness and
 to see the effects of varying parameters.  With a physical robot, this means
 manually setting up the task, letting the test run, gathering the resulting
-data, and then resetting the robot back to the initial state.  This means that
+data, and then resetting the robot back to the initial state.  Consequently,
 issues like battery life become problematic, and not just because there is a
 limited amount of time available for testing.  As the battery level changes,
 the performance of the robot itself can also change.  Futhermore, for any
 rigorous testing of the benchmark, we will want to examine situations where
 the system fails.  This means that some of the testing will involve parameter
-settings that lead to poor behaviour, which could involve physical damage to
-the robot itself.
+settings that lead to poor behaviour, which might have the undesireable 
+result of causing physical damage.
 
 However, \emph{not} using a real physical embodiment for testing is also
 problematic.  First and foremost, without an actual real-world task, why
-should anyone have any confidence that the performance on the benchmark is
+should we have any confidence that the performance on the benchmark is
 reflective of the actual usefulness of the neuromorphic hardware?  It is
-very widely known that simulations of robots (or other physical systems) are
-often \emph{much} easier to control and better-behaved than the real thing.  The
+widely known that simulations of robots (or other physical systems) are
+often \emph{much} easier to control and better-behaved than the real thing [TODO: ref??].  The
 field of robotics is filled with algorithms that work well ``in theory,'' but
 fail when run on actual hardware.  We do not want a benchmark that falls into
-this trap of failing to generalize to real situations.
+this trap, giving high scores to hardware that does not turn out to
+functional well when generalized to real situations.
 
 Furthermore, neuromorphic hardware has another constraint that severely limits
-the possibilities of simulation.  The normal approach when a simulation is
-too simple to reflect reality is to add details to the simulation itself.
+the utility of simulation.  Typically, when a simulation is
+too simple to reflect reality, we add details to the simulation itself.
 Incredibly finely detailed simulations can be created, filling in all of the
 details needed.  However, accurate modelling of physical systems can very quickly
 become \emph{impractical to run in real time}.
-This is a fundamental problem, in that most neuromorphic
-hardware is about real-time interactions, and there is no way to slow down
+This is a fundamental problem, in that neuromorphic
+hardware is often tied to real-time interactions, and there is no way to slow down
 the hardware to match the simulated environment.  This means that even if
 we spent the considerable amount of research effort needed to define a
 simulated environment for an embodied benchmark, running that simulation 
-fast enough to interact with most of the desired hardware would require more
+fast enough to interact with the desired hardware would require more
 resources than are available.
 
 \subsection{Minimal Simulation}
@@ -194,22 +195,24 @@ resources than are available.
 The above considerations seem to indicate that even though using real-world
 physical hardware for benchmarking is problematic, it is still better than
 using simplistic simulations which may not generalize to real tasks.  However,
-we believe that the solution lies in an alternate approach taken from the
-field of evolutionary robotics, known as \emph{Minimal Simulation}
+we believe neuromorphic benchmarking can effectively exploit an approach 
+known as \emph{Minimal Simulation}
 (\citealt{Jakobi97evolutionaryrobotics}).
 
-First, we note that the problem faced here is remarkably similar to a problem
-faced by the evolutionary robotics community.  In evolutionary robotics, the
+This approach was first suggested in the context of evolutionary robotics.  
+Notably, the problem faced by embodied neuromorphic benchmarking is remarkably 
+similar to that faced earlier by these researchers. 
+In evolutionary robotics, the
 goal is to use genetic algorithms to \emph{evolve} systems that can control
 robots to perform various tasks.  These tasks can be as simple as navigation
-and obstacle avoidance, but have also included walking,
+and obstacle avoidance, but have also included more difficult tasks such as walking,
 object identification, and visual tracking [refs???].
 
-However, performing this evolution on real physical robots is problematic
+However, performing evolution on real physical robots is problematic
 for the same reasons that benchmarks on physical robots are problematic.  The
 robots must be reset to the same state each time; they often involve
 behaviour that can physically damage the robots; and they take a very long
-time to run.  For this reason, attempts were made to evolve using simulated
+time to run.  For this reason, attempts were made to evolve algorithms using simulated
 robots.  However, the general finding was that algorithms that worked on the
 simulated robots would not work when run on the real physical robots.  If
 the simulations were improved, adding complex physical detail, then it was
@@ -219,32 +222,32 @@ simulations would run slower than real-time [refs].
 To address this problem, \cite{Jakobi97evolutionaryrobotics} proposed the creation of
 ``minimal'' simulations.  These are simulations where there is variability
 \emph{within the simulation itself}.  In other words, we make \emph{poor}
-simulations, but ensure that the way in which it is poor is itself
-variable.  We then make sure that the controllers work across that whole
+simulations, but ensure that the way in which they are poor is itself
+variable.  We are then in a position to ensure that the controllers work across that whole
 range of variability.  ``Instead of trying to eliminate the differences between
 simulation and reality, they are acknowledged, and mechanisms are put in place
 to prevent evolving controllers from relying on them.'' [ref: jacobi thesis].
 
-With this approach, it was possible to build minimal simulations that would
+With this approach, it became possible to build minimal simulations that would
 run faster than real-time and yet also be complex enough that if a system
 could successfully control the simulation, it was also likely to successfully
-control a real robot.  To achieve this, the simulations are made to be
+control a real robot.  To achieve this kind of transfer, the simulations were made to be
 unreliable in almost every respect.  For example, for a simulation of a simple
 motor it would still be the case that if power is applied it would generally
 try to spin, but the exact amount of torque, the amount of sensory noise,
 the amount of time needed, the amount of static and dynamic friction, and so
 on would all be randomly chosen.  A successful controller would have to deal
 with this wide range of variability, and if it could handle that variability
-then we would have reason to believe it could also handle the real system.
+then there would be reason to believe it could also handle the real physical system.
 
-It is also worth noting that a minimal simulation only has to be a
+It is worth noting that a minimal simulation only has to be a
 good simulation \emph{for successful behaviour}.  That is, ``if we are evolving 
 corridor following behaviour, the dynamics of the simulation might
 differ wildly from those of reality if the controller hits a wall or
 goes round in circles, but this does
 not matter, since the controllers we are interested in transferring
 across the reality gap will neither
-hit walls nor go round in circles.''  If the controller is poor, we do not 
+hit walls nor go round in circles.''  [ref: jacobi thesis]  If the controller is poor, we do not 
 need the simulation to be at all accurate in exactly \emph{how} that poor
 behaviour is manifest.  We do not need an exact detailed physics model of
 the collision between a robot and a wall, or a detailed model of what happens
@@ -254,8 +257,8 @@ things have gone wrong, and thus give a low score to that controller.  This
 means that, for example, in a minimal simulation of an eight-legged walking robot,
 it is not necessary to have a physics simulation that correctly models what
 happens when two legs collide with each other.  Rather, if legs collide
-with each other, that is an indication that the walking behaviour is very poor,
-so as long as that result is indicated we can greatly simplify the simulation
+with each other, that is an indication that the walking behaviour is very poor.
+As long as that result is indicated we can greatly simplify the simulation
 by not including all the details necessary to deal with these sorts of physical
 interactions.
 
