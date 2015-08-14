@@ -615,19 +615,100 @@ be strong enough to compensate for forces in that range, we set $T$ to 10.
 
 \section{Benchmark Analysis}
 
-- what do we measure?   performance: rmse and delay.  Also, power consumption?  cost?
+With the minimal simulation approach, we perform a benchmark by taking a
+particular piece of hardware, using it to control a minimal simulation, and
+measure some aspect of that simulation.  We perform this test multiple times,
+and each time we choose a different set of random parameters for the
+simulation.  A particular benchmark, then, will also provide particular
+distributions for these parameters.
 
-- for given hardware, how many neurons can be done in realtime?  that's how many should be used for comparison
+For example, Figure \ref{fig:analysis_basic} shows the root-mean-squared
+error (rmse) between $q$ and $q_d$ for three different neural systems.  For
+this benchmark, $t_q$, $t_u$, $\tau_q$, and $\tau_u$ are chosen from $U(0, 0.01)$ (the uniform distribution), $\sigma_q$ and $\sigma_u$ are from $U(0, 0.1)$,
+and $\beta$, $\gamma$, $\eta$, and $\zeta$ are all $N(0, 1)$.  As discussed
+above, $K_f$ is 1 and $T$ is 10.  $q_d$ is set to be gaussian white noise with
+a maximum frequency of 1Hz and RMS power of 1.  Each simulation is run
+for 20 seconds, and the error is computed on the last 10 seconds.
 
-- show how these things change as we change parameters in the simulation
+The first hardware tested on this benchmark is an Intel i5-3337U CPU running
+at 1.80GHz.  This is \emph{not} neuromorphic hardware, but serves as a
+point of comparison.  The learning algorithm was implemented using Nengo,
+a software toolkit for developing large-scale neural models that can be run
+on various hardware platforms \cite{nengo}.  For the neuron model, we used
+500 spiking Leaky-Integrate-and-Fire neurons.
 
-- delays
+The second hardware shown in Figure \ref{fig:analysis_basic} is an
+Nvidia Tesla C2075 GPU.  The same Nengo implementation was used, but
+retargetted to run on the GPU using OpenCL, with the same neuron model and
+number of neurons as the CPU.
 
-- number of motors $N$
+The third hardware system benchmarked is SpiNNaker \cite{furber2014}.  This
+neuromorphic hardware consists of 18 ARM processors on a single chip, 
+optimized for running neural models.  Thanks to a SpiNNaker implementation
+for Nengo \cite{mundy2015}, the same Nengo implementation as was used on the
+CPU and GPU can be run on this hardware as well.  Importantly, while the
+neuron model is the same, the actual implementation of this neuron model on
+SpiNNaker is very different from the implementation on the CPU and GPU, in
+that it relies on fixed-point computations and an asynchronous on-chip
+communication system.
 
-- magnitude of nonlinearity $K_f$
+\subsection{Computational Power Benchmark}
 
-CPU, GPU, and SpiNNaker?
+In Figure \ref{fig:analysis_basic}, all three systems perform equally well.
+However, on that benchmark all three systems are implementing exactly 500
+neurons.  The only thing that can be concluded from this is that the
+differences in neuron model across that hardware does not significantly
+impact performance.  A more interesting measure would be to compare based
+on how many neurons each piece of hardware is capable of running in real time.
+This is shown in Figure \ref{fig:analysis_compute}.  In this case, the CPU can
+run XXX neurons, the GPU XXX neurons, and a single SpiNNaker chip can run XXX
+neurons. Furthermore, we also show the effects of increasing the number
+of joints in the simulation.
+
+\subsection{Computational Efficiency Benchmark}
+
+While it is possible to run large neural models on standard CPUs and GPUs,
+one of the primary advantages of neuromorphic hardware is its power
+efficiency.  For this reason, the third benchmark fixes the number of neurons
+at however many that hardware can compute in 0.5 Watts.  While this is a
+reasonable number for SpiNNaker, neither the CPU nor the GPU can even run
+with that little power.  For this reason, we simply take the number of
+neurons that hardware can simulate in real time and scale it by the power
+consumption of the hardware.  The result is that the CPU can run XXX neurons,
+the GPU XXX neurons, and SpiNNaker can run XXX neurons.  The results of
+this benchmark are shown in Figure \ref{fig:analysis_power}.  This clearly
+shows the power advantage of neuromorphic hardware over standard CPUs and
+GPUs on this task.
+
+\subsection{Communication Delay Benchmark}
+
+We can also use this sort of benchmark to examine the effects of various
+parameters in the model.  For example, in Figure \ref{fig:analysis_delay_cpu}
+we show what happens as the delays $\t_q$ and $\t_u$ are increased.
+Importantly, the range on these parameters is larger than before ($U(0, 0.04)$
+rather than $U(0, 0.01)$).  This shows that if the delay is short (less than 0.02), the controller performs well, and if it is very large (greater than 0.03),
+the controller performs poorly.  However, for delays between 0.02 and 0.03,
+the controller will sometimes perform well and sometimes perform poorly.  The
+difference is due to the other random parameters in the system.  Interestingly,
+running this same benchmark on SpiNNaker in Figure \ref{fig:analysis_delay_spinn} shows that SpiNNaker actually performs better on this
+task.  Further analysis is needed to determine exactly why this is.
+
+\subsection{Scaling Benchmark}
+
+As a final comparison, we look at how this algorithm scales as the number
+of neurons increases and as the number of controlled motors $N$ increases.  This
+is a crucial benchmark, as the complexity of the task itself quickly
+increases with $N$ (since there the function computing the force applied
+at each joint is a function of \emph{all} the joint angles $q$).  This means
+that the external force the neural system must learn to predict increases
+in complexity exponentially as $N$ increases.  The quality of the control
+is thus dependent on how good an approximation the neurons can make of this
+complex nonlinear function.
+
+As shown in Figure \ref{fig:analysis_neurons_cpu}, adapting for unknown
+interacting forces on 15 joints is possible with 500 neurons.  This gives
+an indication of how many neurons are needed for different tasks, and can
+be extended to larger systems.
 
 \section{Other Benchmarks}
 
@@ -640,6 +721,10 @@ Driving down a corridor, avoiding obstacles
 Classical conditioning
 
 Operant conditioning 
+
+\section {Conclusions}
+
+- And then a concluding thing pointing out that we've now defined N benchmarks, each of which looks at different aspects of the hardware. If people have new hardware that is good in particular situations, they can adjust the core benchmark be specifying different parameter distributions. This lets people be explicit about what their hardware is good at, while still using the same basic benchmark framework.
 
 
 \section*{Disclosure/Conflict-of-Interest Statement}
