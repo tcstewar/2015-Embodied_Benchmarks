@@ -439,7 +439,7 @@ this model.  Importantly, it functions well with spiking neuron models as
 well as non-spiking ones.  For spiking neurons, we consider $A$ to be the
 instantaneous measure of the output of a neuron (i.e. whether or not it is currently outputing a spike),
 filtered through a low-pass filter.  Further discussion of this sort of learning
-rule and comparison to biological spiking neurons is given by [ref?].
+rule and comparison to biological spiking neurons can be found in (\citealt{bekolay2013}).
 
 
 \subsection{Online and offline learning}
@@ -492,7 +492,7 @@ This results in the simplistic simulation described by:
     \Delta q & = v
 \end{align}
 
-In addition, we add a external perturbing forces.  In a real system,
+In addition, we add an external perturbing force.  In a real system,
 this could be the effects of gravity given the current configuration of the
 motors, or of other unexpected influences.  
 Rather than chosing one particular fixed external force for our benchmark,
@@ -616,8 +616,8 @@ be strong enough to compensate for forces in that range, we set $T$ to 10.
 \section{Benchmark Analysis}
 
 With the minimal simulation approach, we perform a benchmark by taking a
-particular piece of hardware, using it to control a minimal simulation, and
-measure some aspect of that simulation.  We perform this test multiple times,
+particular piece of hardware and using it to control a minimal simulation while
+measuring some aspect of that simulation.  We perform this test multiple times,
 and each time we choose a different set of random parameters for the
 simulation.  A particular benchmark, then, will also provide particular
 distributions for these parameters.
