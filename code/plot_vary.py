@@ -6,7 +6,7 @@ import pylab
 
 import bootstrapci
 
-do_logx = True
+do_logx = False
 
 path = sys.argv[1]
 xkey = sys.argv[2]
@@ -100,7 +100,8 @@ else:
 
 
 
-#pylab.xlim(0, )
-#pylab.xlabel('delay (s)')
+pylab.xlim(0, 0.04)
+pylab.xlabel('delay (s)')
 pylab.ylabel('rmse')
+pylab.ylim(-0.1, 1.0)
 pylab.savefig(path + '.png', dpi=100)

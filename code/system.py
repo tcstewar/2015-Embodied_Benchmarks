@@ -82,6 +82,7 @@ class System(object):
             additive *= self.scale_add
         else:
             additive = self.additive_a * self.scale_add
+        self.additive = additive
         self.dstate += (np.dot(self.motor, self.J) + additive)
         self.state = self.state + self.dstate * self.dt
 
@@ -92,3 +93,19 @@ class System(object):
         self.sensor_delay[self.sensor_index] = self.sensor
         self.sensor_index = (self.sensor_index + 1) % len(self.sensor_delay)
         return self.sensor_delay[self.sensor_index]
+
+
+if __name__ == '__main__':
+    D = 1
+
+    data = []
+    for i in range(10000):
+        system = System(D, D)
+        system.step(np.zeros(D))
+        data.append(system.additive)
+
+    data = np.array(data).flatten()
+    data = np.sort(data)
+    index = int(len(data)*0.025)
+    print('95%% range: %f to %f' % (data[index], data[-index]))
+    
