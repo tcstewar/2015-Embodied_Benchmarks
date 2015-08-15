@@ -211,7 +211,7 @@ In evolutionary robotics, the
 goal is to use genetic algorithms to \emph{evolve} systems that can control
 robots to perform various tasks.  These tasks can be as simple as navigation
 and obstacle avoidance, but have also included more difficult tasks such as walking,
-object identification, and visual tracking [refs???].
+collecting objects, and visual tracking (\citealt{Nolfi2000}).
 
 However, performing evolution on real physical robots is problematic
 for the same reasons that benchmarks on physical robots are problematic.  The
@@ -222,7 +222,8 @@ robots.  However, the general finding was that algorithms that worked on the
 simulated robots would not work when run on the real physical robots.  If
 the simulations were improved, adding complex physical detail, then it was
 possible to generalize to real behaviour; unfortunately, such complex
-simulations would run slower than real-time [refs].
+simulations would run slower than real-time (see \citealt{Husbands1992}; 
+\citealt{Husbands1993}).
 
 To address this problem, \cite{Jakobi97evolutionaryrobotics} proposed the creation of
 ``minimal'' simulations.  These are simulations where there is variability
@@ -231,7 +232,7 @@ simulations, but ensure that the way in which they are poor is itself
 variable.  We are then in a position to ensure that the controllers work across that whole
 range of variability.  ``Instead of trying to eliminate the differences between
 simulation and reality, they are acknowledged, and mechanisms are put in place
-to prevent evolving controllers from relying on them.'' [ref: jacobi thesis].
+to prevent evolving controllers from relying on them.'' \citep[p.~48]{jakobiThesis}
 
 With this approach, it became possible to build minimal simulations that would
 run faster than real-time and yet also be complex enough that if a system
@@ -252,7 +253,7 @@ differ wildly from those of reality if the controller hits a wall or
 goes round in circles, but this does
 not matter, since the controllers we are interested in transferring
 across the reality gap will neither
-hit walls nor go round in circles.''  [ref: jacobi thesis]  If the controller is poor, we do not 
+hit walls nor go round in circles.''  \citep[p.~41]{jakobiThesis}  If the controller is poor, we do not 
 need the simulation to be at all accurate in exactly \emph{how} that poor
 behaviour is manifest.  We do not need an exact detailed physics model of
 the collision between a robot and a wall, or a detailed model of what happens
@@ -867,9 +868,16 @@ The authors declare that the research was conducted in the absence of any commer
 
 \section*{Acknowledgments}
 
-Text Text Text Text Text Text  Text Text Text Text Text Text Text Text  Text Text Text Text Text Text Text Text Text  Text Text Text. Text Text Text Text Text Text  Text Text Text Text Text Text Text Text  Text Text Text Text Text Text Text Text Text  Text Text Text. 
+We thank Andrew Mundy for extensive work on the Nengo SpiNNaker backend, and
+James Knight for his SpiNNaker implementation of the learning rule used here.
 
-\textit{Funding\textcolon} Text Text Text Text Text Text  Text Text.
+\textit{Funding\textcolon} 
+NSERC Discovery (grant 261453),
+ONR (N000141310419)
+AFOSR (FA8655-13-1-3084),
+Canada Research Chairs,
+and Canadian Foundation for Innovation
+Ontario Innovation Trust.
 
 \bibliographystyle{frontiersinSCNS_ENG_HUMS} % for Science, Engineering and Humanities and Social Sciences articles, for Humanities and Social Sciences articles please include page numbers in the in-text citations
 %\bibliographystyle{frontiersinHLTH&FPHY} % for Health and Physics articles
