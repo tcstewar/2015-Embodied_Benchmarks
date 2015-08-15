@@ -171,7 +171,8 @@ problematic.  First and foremost, without an actual real-world task, why
 should we have any confidence that the performance on the benchmark is
 reflective of the actual usefulness of the neuromorphic hardware?  It is
 widely known that simulations of robots (or other physical systems) are
-often \emph{much} easier to control and better-behaved than the real thing [TODO: ref??].  The
+often \emph{much} easier to control and better-behaved than the real thing 
+(see \citealt{Jakobi95}; \citealt{Koos2013}).  The
 field of robotics is filled with algorithms that work well ``in theory,'' but
 fail when run on actual hardware.  We do not want a benchmark that falls into
 this trap, giving high scores to hardware that does not turn out to
@@ -415,7 +416,7 @@ this input.  Since $q$ will be multi-dimensional (if there is more than one
 joint), we may give each neuron a random weighting of each $q$ value ($J_i=e_i \cdot q + b_i$, 
 where $J_i$ is the input to neuron $i$, and $e_i$ is a randomly chosen 
 vector\footnote{$e$ could also be chosen so as to regularly span the space of possibilities,
-or could be learned using some back-propogation of error method.  Here, for simplicity, we only
+or could be learned using some back-propagation of error method.  Here, for simplicity, we only
 consider the approach of randomly selecting $e_i$ and $b_i$.},
 and $b_i$ is a randomly chosen bias term).  
 Given this input, the neurons will produce some output $A$.
@@ -660,23 +661,42 @@ neurons.  The only thing that can be concluded from this is that the
 differences in neuron model across that hardware does not significantly
 impact performance.  A more interesting measure would be to compare based
 on how many neurons each piece of hardware is capable of running in real time.
-This is shown in Figure \ref{fig:analysis_compute}.  In this case, the CPU can
-run XXX neurons, the GPU XXX neurons, and a single SpiNNaker chip can run XXX
-neurons. Furthermore, we also show the effects of increasing the number
-of joints in the simulation.
+This is shown in Figure \ref{fig:analysis_compute}.  In this case, with the
+current implementation, the CPU can
+run 5200 neurons, the GPU 1500 neurons, and a single SpiNNaker core (of which
+there are 18 on one chip) can run 500
+neurons.  These values were measured empirically with the current versions
+of the reference Nengo implementation, the Nengo OpenCL implementation,
+and the Nengo SpiNNaker implementation (as of August 10, 2015).  
+Figure \ref{fig:analysis_compute}
+also shows the effects of varying the number of joints in the simulation,
+giving an indication of the complexity of the external forces that can be
+learned by this many neurons.
 
 \subsection{Computational Efficiency Benchmark}
 
 While it is possible to run large neural models on standard CPUs and GPUs,
 one of the primary advantages of neuromorphic hardware is its power
-efficiency.  For this reason, the third benchmark fixes the number of neurons
-at however many that hardware can compute in 0.5 Watts.  While this is a
-reasonable number for SpiNNaker, neither the CPU nor the GPU can even run
-with that little power.  For this reason, we simply take the number of
-neurons that hardware can simulate in real time and scale it by the power
-consumption of the hardware.  The result is that the CPU can run XXX neurons,
-the GPU XXX neurons, and SpiNNaker can run XXX neurons.  The results of
-this benchmark are shown in Figure \ref{fig:analysis_power}.  This clearly
+efficiency.  For this reason, the third benchmark normalizes the number of neurons
+based on power consumption.  With a power budget of 1W per chip (with 16 used cores),
+we estimate 0.0625W for the 500 neurons used here and round up to 0.1W to be
+conservative.  Of course, neither the CPU nor the
+GPU are designed to run on that little power.  For this reason,
+on this benchmark we simply and scale it by the power consumption of the hardware.
+For this power consumption we measure the difference between the idle power
+consumption and the consumption when running the benchmark.  For the Intel
+i5-3337U this was $34W - 11.5W = 12.5W$ and for the Nvidia Tesla C2075 GPU
+this was $74W - 70W = 4W$.  This value is much lower than the peak power
+consumption supported by the GPUi ($215W$), indicating that the current implementation
+does not make extensive use of the GPU.  Indeed, initial analysis indicates that
+the main bottleneck is communication between the GPU and the environment (i.e.,
+the minimal simulation), and we feel it is appropriate that this benchmark
+captures that limitation of the current GPU implementation.
+
+Given the above considerations, we run the benchmark indicating that the CPU can run 42 neurons per 0.1W,
+the GPU 38 neurons per 0.1W, and SpiNNaker can run 500 neurons per 0.1W.  If
+this number of neurons is kept fixed and the number of joints controlled is
+varied, we get the benchmark shown in Figure \ref{fig:analysis_power}.  This clearly
 shows the power advantage of neuromorphic hardware over standard CPUs and
 GPUs on this task.
 
@@ -720,14 +740,14 @@ across a range of situations.  By adjusting the random distributions that
 define that range of situations, we generate different benchmarks that
 explore the capabilities of the systems in different ways.  This allows for
 an explicit depiction of the sorts of conditions in which particular
-neuromorphic hardware perfroms well.  After all, it is unlikely that one
+neuromorphic hardware performs well.  After all, it is unlikely that one
 piece of neuromorphic hardware will be the best choice in all situations;
 rather, these benchmarks allow us to demonstrate the advantages and disadvantages
 of the hardware by looking at the same underlying system, but with multiple
 different distributions of parameters.
 
 Python software for the minimal simulation and the full benchmarks are
-available at \texttt{http://github.com/ctn-waterloo/ctn_benchmarks}.
+available at \texttt{http://github.com/ctn-waterloo/ctn\_benchmarks}.
 
 \subsection{Benchmark Improvements}
 
@@ -743,7 +763,7 @@ we can explore improvements to the algorithm (better choices for $e$,
 different learning rules, adaptive learning rates, adapting $K_p$ and $K_d$, etc.).
 For example, in the SpiNNaker hardware implementation not only can the neuron model
 be adjusted, but the distribution of the task across the multiple cores is also
-under programmer control.  Futhermore, SpiNNaker provides a custom I/O interface
+under programmer control.  Furthermore, SpiNNaker provides a custom I/O interface
 for high-speed communication that could be used to reduce communication delay.
 
 In addition, we would like to clarify and expand the space of physical tasks
@@ -774,7 +794,7 @@ only directly controls the joints $q$ of an arm.  The position of the hand $x$
 is some function of $q$, but this function may be unknown or highly complex.
 Crucially, there is a learning rule that is similar to the one discussed above
 that can learn this mapping (\citealt{adaptiveJacobian}), and we have had
-some success in using it for particular arm control tasks (citealt{dewolf2014}).
+some success in using it for particular arm control tasks (\citealt{dewolf2014}).
 This would give a benchmark with a much more flexible set of capabilities;
 for example a non-neural version of this learning algorithm was able to
 learn to control a robot arm to follow a certain path, given only the
