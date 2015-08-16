@@ -163,7 +163,7 @@ limited amount of time available for testing.  As the battery level changes,
 the performance of the robot itself can also change.  Futhermore, for any
 rigorous testing of the benchmark, we will want to examine situations where
 the system fails.  This means that some of the testing will involve parameter
-settings that lead to poor behaviour, which might have the undesireable 
+settings that lead to poor behaviour, which might have the undesirable 
 result of causing physical damage.
 
 However, \emph{not} using a real physical embodiment for testing is also
@@ -278,7 +278,7 @@ that hardware will perform in other situations.  For example, if an image recogn
 algorithm performs well on the MNIST hand-written digit recognition
 benchmark, this suggests that it may also perform well on
 a different recognition task.  Of course, this inference will fail if that
-algorithn has been specifically over-fit to that situtation.  For
+algorithm has been specifically over-fit to that situation.  For
 that reason, it is useful to have benchmarks that covers a wide range
 of variations on the task.  If the hardware performs well across that
 variability, then it is more likely to also work in sufficiently similar new situations.
@@ -336,7 +336,7 @@ so if we are to choose one particular physical embodiment to test in the
 real world, then we should choose one that is not high-precision.
 For this reason, we believe using cheap Lego robots is actually more informative
 for benchmarking than expensive high-precision robots.\footnote{Of course,
-for more complex benchmark tasks we may need sensory and motor capabiities
+for more complex benchmark tasks we may need sensory and motor capabilities
 that are beyond that of a simple Lego robot.}
 
 \section{Example: Adaptive Motor Control}
@@ -364,11 +364,11 @@ arm itself will pull the arm downward.  Thus to hold the arm still at a
 particular $q_d$ will require the controller to apply a force to counteract
 gravity.  Since the PD controller always produces an output $u=0$ when $q=q_d$,
 it cannot compensate for gravity, and so the arm will stay stationary at some
-angle below the desired angle. [TODO: add diagram]
+angle below the desired angle (Figure \ref{fig:system}).
 
 The standard solution to this steady-state error is to add an I (integral) term ($K_i \int{(q_d-q) dt}$)
 to the controller, making it a PID controller.  As the difference between where it is ($q$) and
-where we want it to be ($q_d$) accumulates over time, the $K_i$ term will gradually increase the
+where we want it to be ($q_d$) accumulates over time, the $K_i$ term will gradually increase
 the extra controlled force $u$ that is being applied until it is large enough to counteract
 the external force of gravity (or whatever other external forces are present).
 However, this approach has great difficulty when $q_d$ changes, since the
@@ -439,7 +439,7 @@ Given that this is a canonical example of the use of neural networks, we
 expect that the majority of neuromorphic hardware is flexible enough to implement
 this model.  Importantly, it functions well with spiking neuron models as 
 well as non-spiking ones.  For spiking neurons, we consider $A$ to be the
-instantaneous measure of the output of a neuron (i.e. whether or not it is currently outputing a spike),
+instantaneous measure of the output of a neuron (i.e. whether or not it is currently outputting a spike),
 filtered through a low-pass filter.  Further discussion of this sort of learning
 rule and comparison to biological spiking neurons can be found in (\citealt{bekolay2013}).
 
@@ -497,7 +497,7 @@ This results in the simplistic simulation described by:
 In addition, we add an external perturbing force.  In a real system,
 this could be the effects of gravity given the current configuration of the
 motors, or of other unexpected influences.  
-Rather than chosing one particular fixed external force for our benchmark,
+Rather than choosing one particular fixed external force for our benchmark,
 we \emph{randomly generate} this force each time the benchmark is run.  This
 ensures that the benchmark covers a wide range of possible external forces
 and motor configurations, rather than just one particular situation.
@@ -597,7 +597,7 @@ cases.
 
 For sensor noise, we note that the EV3 rotation encoders for the motors (the
 devices that measure $q$) have a resolution of 0.0175 (1 degree).  This is a
-very different sort of noise than the gaussian noise used in the simulation,
+very different sort of noise than the Gaussian noise used in the simulation,
 so we set the simulation noise $\sigma_q$ to be much larger (uniformly distributed
 between 0 and 0.1).  Similarly, the motor resolution is 0.01, as it accepts 
 integer values up to 100, so we set the motor noise $\sigma_u$ to be uniform between
@@ -628,12 +628,12 @@ For example, Figure \ref{fig:analysis_basic} shows the root-mean-squared
 error (rmse) between $q$ and $q_d$ for three different neural systems.  For
 this benchmark, $t_q$, $t_u$, $\tau_q$, and $\tau_u$ are chosen from $U(0, 0.01)$ (the uniform distribution), $\sigma_q$ and $\sigma_u$ are from $U(0, 0.1)$,
 and $\beta$, $\gamma$, $\eta$, and $\zeta$ are all $N(0, 1)$.  As discussed
-above, $K_f$ is 1 and $T$ is 10.  $q_d$ is set to be gaussian white noise with
+above, $K_f$ is 1 and $T$ is 10.  $q_d$ is set to be Gaussian white noise with
 a maximum frequency of 1Hz and RMS power of 1.  Each simulation is run
 for 20 seconds, and the error is computed on the last 10 seconds.
 
 The first hardware tested on this benchmark is an Intel i5-3337U CPU running
-at 1.80GHz.  This is \emph{not} neuromorphic hardware, but serves as a
+at 1.80GHz.  This is not neuromorphic hardware, but serves as a
 point of comparison.  The learning algorithm was implemented using Nengo,
 a software toolkit for developing large-scale neural models that can be run
 on various hardware platforms \cite{nengo}.  For the neuron model, we used
@@ -668,11 +668,8 @@ run 5200 neurons, the GPU 1500 neurons, and a single SpiNNaker core (of which
 there are 18 on one chip) can run 500
 neurons.  These values were measured empirically with the current versions
 of the reference Nengo implementation, the Nengo OpenCL implementation,
-and the Nengo SpiNNaker implementation (as of August 10, 2015).  
-Figure \ref{fig:analysis_compute}
-also shows the effects of varying the number of joints in the simulation,
-giving an indication of the complexity of the external forces that can be
-learned by this many neurons.
+and the Nengo SpiNNaker implementation (as of August 10, 2015).  All other
+parameters are as before.
 
 \subsection{Computational Efficiency Benchmark}
 
@@ -686,33 +683,32 @@ GPU are designed to run on that little power.  For this reason,
 on this benchmark we simply and scale it by the power consumption of the hardware.
 For this power consumption we measure the difference between the idle power
 consumption and the consumption when running the benchmark.  For the Intel
-i5-3337U this was $34W - 11.5W = 12.5W$ and for the Nvidia Tesla C2075 GPU
+i5-3337U this was $34W - 11.5W = 22.5W$ and for the Nvidia Tesla C2075 GPU
 this was $74W - 70W = 4W$.  This value is much lower than the peak power
-consumption supported by the GPUi ($215W$), indicating that the current implementation
+consumption supported by the GPU ($215W$), indicating that the current implementation
 does not make extensive use of the GPU.  Indeed, initial analysis indicates that
 the main bottleneck is communication between the GPU and the environment (i.e.,
 the minimal simulation), and we feel it is appropriate that this benchmark
 captures that limitation of the current GPU implementation.
 
-Given the above considerations, we run the benchmark indicating that the CPU can run 42 neurons per 0.1W,
-the GPU 38 neurons per 0.1W, and SpiNNaker can run 500 neurons per 0.1W.  If
-this number of neurons is kept fixed and the number of joints controlled is
-varied, we get the benchmark shown in Figure \ref{fig:analysis_power}.  This clearly
-shows the power advantage of neuromorphic hardware over standard CPUs and
-GPUs on this task.
+Given the above considerations, we run the benchmark indicating that the CPU can run 23 neurons per 0.1W,
+the GPU 38 neurons per 0.1W, and SpiNNaker can run 500 neurons per 0.1W.  
+As shown in Figure \ref{fig:analysis_power}, the neuromorphic hardware
+outperforms the CPU and GPU on this task.
 
 \subsection{Communication Delay Benchmark}
 
 We can also use this sort of benchmark to examine the effects of various
-parameters in the model.  For example, in Figure \ref{fig:analysis_delay_cpu}
-we show what happens as the delays $t_q$ and $t_u$ are increased.
+parameters in the model.  For example, Figure \ref{fig:analysis_delay}
+shows what happens as the delays $t_q$ and $t_u$ are increased.
 Importantly, the range on these parameters is larger than before ($U(0, 0.04)$
 rather than $U(0, 0.01)$).  This shows that if the delay is short (less than 0.02), the controller performs well, and if it is very large (greater than 0.03),
 the controller performs poorly.  However, for delays between 0.02 and 0.03,
 the controller will sometimes perform well and sometimes perform poorly.  The
 difference is due to the other random parameters in the system.  Interestingly,
-running this same benchmark on SpiNNaker in Figure \ref{fig:analysis_delay_spinn} shows that SpiNNaker actually performs better on this
-task.  This is somewhat surprising, as we are currently using the slow
+running SpiNNaker actually performs better on this
+task than the CPU (the GPU data is equivalent to the CPU and is not shown).  
+This is somewhat surprising, as we are currently using the slow
 Ethernet interface to SpiNNaker, rather than the high-speed I/O system that
 is meant for motor control.  Further analysis is needed to determine exactly why this is.
 
@@ -810,7 +806,7 @@ good at controlling.
 We also believe this approach to developing benchmarks would be applicable
 to more complex and abstract tasks.  For example, much of the original work
 on minimal simulation involved robot navigation and obstacle avoidance.  
-\cite{Jakobi97evolutonaryrobotics} created a
+\cite{Jakobi97evolutionaryrobotics} created a
 minimal simulation of an environment with fixed walls, a mobile robot, and
 various sensory systems.  A benchmark involving movement between locations
 while avoiding collisions could be defined, and the environment could be
@@ -869,7 +865,7 @@ The authors declare that the research was conducted in the absence of any commer
 \section*{Acknowledgments}
 
 We thank Andrew Mundy for extensive work on the Nengo SpiNNaker backend, and
-James Knight for his SpiNNaker implementation of the learning rule used here.
+James Knight for his prototype SpiNNaker implementation of the learning rule used here.
 
 \textit{Funding\textcolon} 
 NSERC Discovery (grant 261453),
@@ -893,6 +889,17 @@ Ontario Innovation Trust.
 
 \begin{figure}[h!]
 \begin{center}
+\includegraphics[width=10cm]{figures/SingleArmSystem}
+\end{center}
+ \textbf{\refstepcounter{figure}\label{fig:system} Figure \arabic{figure}.}{ 
+     An abstract physical system that could be controlled.  In order to hold
+     the joint $q$ at a desired angle $q_d$, a force must be applied to
+     counteract the pull of gravity.  The magnitude of this force is a
+ function of $q$ which can be learned.}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
 \includegraphics[width=18cm]{figures/fig_ev3}
 \end{center}
  \textbf{\refstepcounter{figure}\label{fig:ev3} Figure \arabic{figure}.}{ Adaptive control of the EV3 lego robot used for calibrating the minimal simulation.
@@ -900,6 +907,56 @@ Ontario Innovation Trust.
  is when the external force is largest).  With adaptation, $q$ is closer to $q_d$ after about 5 seconds, showing that the system has quickly learned to compensate.}
 \end{figure}
 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=18cm]{figures/plot_basic}
+\end{center}
+ \textbf{\refstepcounter{figure}\label{fig:analysis_basic} Figure \arabic{figure}.}{ Benchmark results comparing three hardware systems.
+     Each system is running 500 neurons.  The hardware do not statistically
+     significantly differ, and are all clear improvements over the having
+     no adaptation at all.
+     Scatterplots show individual runs, the 
+     shaded area is the mean plus or minus the standard deviation, and the 95\% confidence interval of the mean is shown.}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=18cm]{figures/plot_compute}
+\end{center}
+ \textbf{\refstepcounter{figure}\label{fig:analysis_compute} Figure \arabic{figure}.}{ Benchmark results comparing three hardware systems
+     in terms of their performance when running as many neurons as they are capable of in real time.  Scatterplots show individual runs, the 
+     shaded area is the mean plus or minus the standard deviation, and the 95\% confidence interval of the mean is shown.  In this case,
+     all three hardware systems perform equally well.}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=18cm]{figures/plot_power}
+\end{center}
+ \textbf{\refstepcounter{figure}\label{fig:analysis_power} Figure \arabic{figure}.}{ Benchmark results comparing three hardware systems
+     in terms of their performance when running as many neurons as they are capable of per 0.1 Watt of power consumption.  Scatterplots show individual runs, the 
+     shaded area is the mean plus or minus the standard deviation, and the 95\% confidence interval of the mean is shown.  The SpiNNaker system is a statistically
+ significant improvement over the other two.}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=18cm]{figures/plot_delay}
+\end{center}
+ \textbf{\refstepcounter{figure}\label{fig:analysis_delay} Figure \arabic{figure}.}{ Benchmark results comparing the effects
+     of communication delay for the CPU and SpiNNaker systems.  The delays $t_q$ and $t_u$ are randomly varied.  Shaded
+ area is the mean plus or minus one standard deviation, smoothed with a Gaussian kernel of $\sigma=0.005$.}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=18cm]{figures/plot_vary_neurons}
+\end{center}
+ \textbf{\refstepcounter{figure}\label{fig:analysis_neurons_cpu} Figure \arabic{figure}.}{ Benchmark results examining the relationship
+     between number of neurons and the number of simulated joints $N$.  The
+     benchmark was run on the Intel i5-3337U CPU.  Shaded
+ area is the mean plus or minus one standard deviation, smoothed with a Gaussian kernel of $\sigma=1$ in the $log_2$ domain.}
+\end{figure}
 %\begin{figure}
 %\begin{center}
 %\includegraphics[width=10cm]{logo2}% This is an *.eps file
