@@ -192,12 +192,14 @@ simulated environment for an embodied benchmark, running that simulation
 fast enough to interact with the desired hardware would require more
 resources than are available.  
 
-[TODO: maybe add a paragraph summarizing the horns of the dilemma so as to set up the
-role of minimal simulation more?]
+We are thus left with a situation where any benchmark we might define for
+a rich, embodied task will be either impractical for different researchers to
+run (if it is physically embodied), or inapplicable to real-world situations
+(if it is performed in simulation).  Neither option is particularly appealing.
 
 \subsection{Minimal Simulation}
 
-The above considerations seem to indicate that even though using real-world
+The above considerations could be taken as an argument that even though using real-world
 physical hardware for benchmarking is problematic, it is still better than
 using simplistic simulations which may not generalize to real tasks.  However,
 we do not think this is the case.  Instead, we believe neuromorphic benchmarking can effectively exploit an approach 
@@ -442,6 +444,10 @@ well as non-spiking ones.  For spiking neurons, we consider $A$ to be the
 instantaneous measure of the output of a neuron (i.e. whether or not it is currently outputting a spike),
 filtered through a low-pass filter.  Further discussion of this sort of learning
 rule and comparison to biological spiking neurons can be found in (\citealt{bekolay2013}).
+This type of neural modelling forms the foundation of \cite{eliasmith2003}'s
+Neural Engineering Framework, and \cite{stewart2014} have shown that spiking
+and non-spiking neurons can be used in this manner to implement a wide
+variety of computations.
 
 
 \subsection{Online and Offline Learning}
@@ -558,11 +564,11 @@ one real-world task where the hardware performs similarly to how it performs in 
 
 For our specific demonstration, we describe an easy-to-build system that can be usefully controlled
 by this adaptive method.  In particular, we use the Lego Mindstorms EV3 robot kit,
-organized as shown in [TODO: add figure].  It consists of a single
-motor, mounted in such a way that there is a significant amount of weight on
-the arm itself (i.e., the weight of the motor itself).  Multiple motors can be
+organized as shown in Figure \ref{fig:lego}.  It consists of a single
+motor, mounted such that the full weight of a second (unused) motor applies
+a significant force on the arm itself.  Multiple motors can be
 added, and other configurations can be considered and should also be suitable
-for testing control, but here we consider only this basic case.
+for benchmarking, but here we consider only this basic case.
 
 To interface to the physical hardware, we installed the \texttt{ev3dev} operating
 system (\texttt{http://ev3dev.org}), a Debian-based Linux system specifically developed
@@ -871,8 +877,9 @@ James Knight for his prototype SpiNNaker implementation of the learning rule use
 NSERC Discovery (grant 261453),
 ONR (N000141310419)
 AFOSR (FA8655-13-1-3084),
+Mitacs Postdoctoral Fellowship,
 Canada Research Chairs,
-and Canadian Foundation for Innovation
+Canadian Foundation for Innovation,
 Ontario Innovation Trust.
 
 \bibliographystyle{frontiersinSCNS_ENG_HUMS} % for Science, Engineering and Humanities and Social Sciences articles, for Humanities and Social Sciences articles please include page numbers in the in-text citations
@@ -896,6 +903,16 @@ Ontario Innovation Trust.
      the joint $q$ at a desired angle $q_d$, a force must be applied to
      counteract the pull of gravity.  The magnitude of this force is a
  function of $q$ which can be learned.}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=18cm]{figures/lego}
+\end{center}
+ \textbf{\refstepcounter{figure}\label{fig:lego} Figure \arabic{figure}.}{ A
+     simple physical robot embodiment for calibrating the minimal simulation.
+     To rotate the central motor to the desired position $q$, enough force
+ must be added to $u$ to counteract the weight of the second unused motor.}
 \end{figure}
 
 \begin{figure}[h!]
