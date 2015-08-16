@@ -665,6 +665,9 @@ SpiNNaker is very different from the implementation on the CPU and GPU, in
 that it relies on fixed-point computations and an asynchronous on-chip
 communication system.
 
+All three hardware systems drastically improve performance on this task, as
+compared to the non-adaptive controller.
+
 \subsection{Computational Power Benchmark}
 
 In Figure \ref{fig:analysis_basic}, all three systems perform equally well.
@@ -795,11 +798,11 @@ that would be seen in those situations.
 
 \subsection{Other Benchmarks}
 
-The approach to benchmarking presented here can also be applied to other tasks,
-defining minimal simulations and evaluating hardware across a random sampling
-of that space.  
+The approach to benchmarking presented here can be applied to a wide variety of other tasks,
+by defining different minimal simulations and evaluating hardware and algorithms across a random sampling
+of simulation parameters.  
 
-The most straightforward expansion would be to consider motor control where
+One possibility is to consider motor control where
 the state being controlled \emph{is not the motor state itself}.  That is,
 suppose we want to control the position of a hand $x$, but our output $u$
 only directly controls the joints $q$ of an arm.  The position of the hand $x$
@@ -811,28 +814,28 @@ This would give a benchmark with a much more flexible set of capabilities;
 for example a non-neural version of this learning algorithm was able to
 learn to control a robot arm to follow a certain path, given only the
 visual feedback of where the tip of its hand was, without knowing the
-geometry of its own hand or the position of the camera with relation to that
+geometry of its own hand, or the position of the camera with relation to that
 hand (\citealt{adaptiveJacobian}).  While it is unlikely that such a
 system would work for \emph{any} possible sensorimotor combination, developing
 such a benchmark could identify the space of such embodiments that a
 particular algorithm running on particular neuromorphic hardware would be
 good at controlling.
 
-We also believe this approach to developing benchmarks would be applicable
-to more complex and abstract tasks.  For example, much of the original work
+More generally, we believe that this approach to developing benchmarks is applicable
+to entirely different kinds of tasks.  For example, much of the original work
 on minimal simulation involved robot navigation and obstacle avoidance.  
 \cite{Jakobi97evolutionaryrobotics} created a
 minimal simulation of an environment with fixed walls, a mobile robot, and
-various sensory systems.  A benchmark involving movement between locations
+various sensory systems.  Using such a simulation, a benchmark involving movement between locations
 while avoiding collisions could be defined, and the environment could be
 enhanced with moving obstacles and a richer set of sensors.  The eventual
-goal would be to achieve reliable movement in an environment that includes
+goal might be to achieve reliable movement in an environment that includes
 people.
 
-Another direction to take this sort of benchmark would be classical and
-operant conditioning.  This sort of learning is extremely common in living
-creatures, and is vital for dealing with novel environments.  As such,
-it is natural to define tasks involving learning the associates between
+Another example is the application of this method to classical and
+operant conditioning.  Conditioning effects are extremely common in living
+creatures, and are clearly evident when animals are exposed to novel environments.  As such,
+it is natural to define benchmark tasks involving learning the associations between
 sensory events in the environment (akin to classical conditioning) and the
 associations between actions and desired sensory states (akin to operant
 conditioning).  Again, the approach of minimal simulation could be used
@@ -846,30 +849,29 @@ here.
 
 \section {Conclusions}
 
-The primary purpose of this paper is to describe a new method for benchmarking
+We have described a new method for benchmarking
 neuromorphic hardware that addresses the problem of reliably benchmarking
-in a complex task that involves interaction with an environment.  This
-method involves building a ``minimal'' simulation; one that is extremely
+complex tasks that involve interaction with an environment.  This
+method involves building a minimal simulation; a simulation that is extremely
 simple in terms of required computation, but that has a high degree of
-adjustable variability.  By benchmarking across that whole space of
-possibilities, we can identify hardware that performs well across that whole
+adjustable variability.  By benchmarking across a space of
+possibilities, we can identify hardware that performs well across that
 space, and is thus likely to be useful in real-world situations.  In order
-to identify what real-world situations are covered by a minimal simulation,
-we can calibrate the variability in that simulation with particular physical
+to identify which real-world situations are covered by a minimal simulation,
+we can tune the variability in the simulation to particular physical
 systems.
 
 We demonstrated this approach by defining a minimal simulation and a task
-based around adaptive motor control.  We presented a basic algorithm that
-can use neuromorphic hardware to improve performance on this task.  While this
-algorithm can be run on a variety of hardware, other algorithms could also
-be used on this task, and there are many implementation possibilities.
+appropriate for adaptive motor control.  We presented an algorithm that
+can use neuromorphic hardware to improve performance on this task over that
+of a standard non-adaptive controller.  
 Importantly, by measuring performance while adjusting the distributions of
 parameters in the benchmark, it is possible to characterize different aspects
 of the hardware, identifying how different aspects of the task affect
 performance for different hardware.  This was demonstrated by providing
 five different benchmarks, each based on the same minimal simulation, but
 setting parameters in different ways.  We believe this sort of flexibility
-is important in a benchmark, as it lets researchers be explicit about what
+is important in a benchmark method, as it lets researchers be explicit about what
 their hardware is good at, while still using the same basic and shareable
 benchmark framework.
 
@@ -908,7 +910,7 @@ Ontario Innovation Trust.
 \includegraphics[width=10cm]{figures/SingleArmSystem}
 \end{center}
  \textbf{\refstepcounter{figure}\label{fig:system} Figure \arabic{figure}.}{ 
-     An abstract physical system that could be controlled.  In order to hold
+     A simple example of a physical embodiment for control.  In order to hold
      the joint $q$ at a desired angle $q_d$, a force must be applied to
      counteract the pull of gravity.  The magnitude of this force is a
  function of $q$ which can be learned.}
