@@ -281,7 +281,7 @@ algorithm performs well on the MNIST hand-written digit recognition
 benchmark, this suggests that it may also perform well on
 a different recognition task.  Of course, this inference will fail if that
 algorithm has been specifically over-fit to that situation.  For
-that reason, it is useful to have benchmarks that covers a wide range
+that reason, it is useful to have benchmarks that cover a wide range
 of variations on the task.  If the hardware performs well across that
 variability, then it is more likely to also work in sufficiently similar new situations.
 
@@ -624,10 +624,10 @@ be strong enough to compensate for forces in that range, we set $T$ to 10.
 \section{Benchmark Analysis}
 
 To run a benchmark using the proposed
-minimal simulation approach, there are three main steps: 1. identify
+minimal simulation approach, there are four main steps: 1. identify
 the neuromorphic hardware to be tested; 2. construct the minimal
 simulation; 3. determine a metric (e.g. root-mean-squared error; rmse)
-to record; 5. specify distributions for any parameters in the
+to record; 4. specify distributions for any parameters in the
 simulation.  We then perform multiple runs of the simulation, each
 time choosing different values from the parameter distributions.  We
 can then plot how the metric varies as a function of a particular parameter
