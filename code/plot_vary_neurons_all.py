@@ -82,4 +82,5 @@ for D in [1, 5, 10, 15]:
         pylab.ylabel('rmse')
     pylab.ylim(-0.05, 0.5)
     index += 1
-pylab.savefig('fig_vary_neurons.png', dpi=100)
+pylab.savefig('plot_vary_neurons.png', dpi=300)
+pylab.show()

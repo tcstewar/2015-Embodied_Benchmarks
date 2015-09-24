@@ -59,7 +59,7 @@ class AdaptiveControl(benchmark.Benchmark):
             nengo.Connection(minsim, control[:p.D], synapse=0)
             nengo.Connection(control, minsim, synapse=None)
 
-            if p.adapt:
+            if p.adapt and p.n_neurons > 0:
 
 
                 adapt = nengo.Ensemble(p.n_neurons, dimensions=p.D,
