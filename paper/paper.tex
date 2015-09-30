@@ -47,7 +47,7 @@ $^{2}$Mobile Intelligent Autonomous Systems group,
 \onecolumn
 \firstpage{1}
 
-\title[Embodied Neuromorphic Benchmarks]{Embodied Neuromorphic Benchmarks} 
+\title[Closed-loop Neuromorphic Benchmarks]{Closed-loop Neuromorphic Benchmarks} 
 
 \author[\firstAuthorLast ]{\Authors} %This field will be automatically populated
 \address{} %This field will be automatically populated
@@ -76,12 +76,12 @@ $^{2}$Mobile Intelligent Autonomous Systems group,
 \begin{abstract}
 
     Evaluating the effectiveness and performance of neuromorphic hardware is
-    difficult.  It is even more difficult when the task of interest is an
-    embodied task; that is, a task where the output from the neuromorphic
+    difficult.  It is even more difficult when the task of interest is a
+    closed-loop task; that is, a task where the output from the neuromorphic
     hardware affects some environment, which then in turn affects the
-    hardware's future input.  However, embodied situations
+    hardware's future input.  However, closed-loop situations
     are one of the primary potential uses of neuromorphic hardware.  To address
-    this, we present a methodology for generating embodied benchmarks that makes use
+    this, we present a methodology for generating closed-loop benchmarks that makes use
     of a hybrid of real physical embodiment and a type of ``minimal'' simulation.
     Minimal simulation has been shown to lead to robust real-world performance,
     while still maintaining the practical advantages of simulation, such as
@@ -113,28 +113,28 @@ hardware).  Good benchmarks will allow us to quantitatively compare systems, let
 researchers both measure the progress in the field, and also directly
 compare competing approaches.
 
-In this paper, we focus on the development of \emph{embodied} benchmarks.
+In this paper, we focus on the development of \emph{closed-loop} benchmarks.
 These are dynamic tasks where the output of the neuromorphic hardware \emph{influences
 its own future input} through some environment.  This is in contrast to standard categorization or pattern
 identification tasks, where the input is some fixed sequence and the hardware
 must produce the correct output for each input (or input pattern).
 
-We believe embodied benchmarks should be of particular interest to
+We believe closed-loop benchmarks should be of particular interest to
 neuromorphic research, given that the most compelling applications of neuromorphic
 hardware are likely to be in this domain of embedded and interactive control
-of robotic or other physical systems.  However, embodiment itself raises a number
+of robotic or other physical systems.  However, the closed loop itself raises a number
 of issues that complicate the development of such benchmarks.  Rather than
 simply providing a data file of inputs and desired outputs, the benchmark
-must either specify a full physical system for that embodiment, or it must 
+must either specify a full physical system to be controlled, or it must 
 provide software for a simulation of that system.  As we discuss below, both
 approaches are problematic.  
 Describing a method for overcoming these shortcomings is the primary goal of
 this paper.
 
 
-\section{Embodied Benchmarks}
+\section{Closed-Loop Benchmarks}
 
-An embodied benchmark task is one where the system we are studying has a 
+A closed-loop benchmark task is one where the system we are studying has a 
 two-way interaction with some sort of environment.  That is, the outputs from
 the neuromorphic hardware are sent to the environment where they cause
 an effect, the results of which change the subsequent input.  For example,
@@ -143,7 +143,7 @@ sensory data received by the robot.
 
 \subsection{Simulation versus Physical Instantiation}
 
-To define an embodied benchmark, we need to be explicit about the embodiment.  If
+To define a closed-loop benchmark, we need to be explicit about the interaction with the environment.  If
 a robot is to be controlled, we need to specify all of the details of that robot.  What motors does it have?  How are they
 configured?  How strong are they?  What sensors are there?  Where are they
 placed?  How accurate are they?  However, even if these questions are
@@ -188,12 +188,12 @@ This is a fundamental problem, in that neuromorphic
 hardware is often tied to real-time interactions, and there is no way to slow down
 the hardware to match the simulated environment.  This means that even if
 we spent the considerable amount of research effort needed to define a
-simulated environment for an embodied benchmark, running that simulation 
+simulated environment for a closed-loop benchmark, running that simulation 
 fast enough to interact with the desired hardware would require more
 resources than are available.  
 
 We are thus left with a situation where any benchmark we might define for
-a rich, embodied task will be either impractical for different researchers to
+a closed-loop task will be either impractical for different researchers to
 run (if it is physically embodied), or inapplicable to real-world situations
 (if it is performed in simulation).  Neither option is particularly appealing.
 
@@ -207,7 +207,7 @@ known as \emph{Minimal Simulation}
 (\citealt{Jakobi97evolutionaryrobotics}).
 
 This approach was first suggested in the context of evolutionary robotics.  
-Notably, the problem faced by embodied neuromorphic benchmarking is remarkably 
+Notably, the problem faced by closed-loop neuromorphic benchmarking is remarkably 
 similar to that faced earlier by these researchers. 
 In evolutionary robotics, the
 goal is to use genetic algorithms to \emph{evolve} systems that can control
@@ -343,7 +343,7 @@ that are beyond that of a simple Lego robot.}
 
 \section{Example: Adaptive Motor Control}
 
-To demonstrate this approach to creating embodied neuromorphic benchmarks,
+To demonstrate this approach to creating closed-loop neuromorphic benchmarks,
 we now consider a basic control task.  Suppose we have a system with a number
 of joints with positions $q = [q_1, q_2, ..., q_n]$ and we want to send a control signal $u = [u_1, u_2, ..., u_n]$ to the motors at each joint
 such that
@@ -462,7 +462,7 @@ the ability to update connection weights in this manner.
 
 In that case, there are at least two possible ways to implement this algorithm.
 First, the multiplication by $d$ can be done on the
-output from the neuromorphic hardware.  Any embodied neuromorphic system will have some method that takes
+output from the neuromorphic hardware.  Any closed-loop neuromorphic system will have some method that takes
 the neural output from the hardware and sends it to the motors (or to the simulation
 of the motors).  Instead of sending the result of $Ad$, the hardware could
 send $A$ (the activity of all the neurons), and the interface to the motor
@@ -674,7 +674,7 @@ In Figure \ref{fig:analysis_basic}, all three systems perform equally well.
 However, on that benchmark all three systems are implementing exactly 500
 neurons.  This demonstrates that the
 differences in neuron model across that hardware does not significantly
-impact performance.  Given that embodied models rely on real-time simulation,
+impact performance.  Given that closed-loop models rely on real-time simulation,
 it is also important to determine how many neurons each piece of hardware is capable of running in real time.
 This is shown in Figure \ref{fig:analysis_compute}.  With the current implementation, the CPU can
 run 5200 neurons, the GPU 1500 neurons, and a single SpiNNaker core (of which
@@ -704,7 +704,7 @@ the main bottleneck is communication between the GPU and the environment (i.e.,
 the minimal simulation), and we feel it is appropriate that this benchmark
 captures that limitation of the current GPU implementation.  The GPU could easily
 run many more neurons than this in real time, if those neurons were not connected
-to an environment.  However, that would not be useful for an embodied task.
+to an environment.  However, that would not be useful for a closed-loop task.
 
 Given the above considerations, the benchmark indicates that the CPU can run 23 neurons per 0.1W,
 the GPU 38 neurons per 0.1W, and SpiNNaker can run 500 neurons per 0.1W.  
