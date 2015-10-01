@@ -179,26 +179,45 @@ often \emph{much} easier to control and better-behaved than the real thing
 field of robotics is filled with algorithms that work well ``in theory,'' but
 fail when run on actual hardware.  We do not want a benchmark that falls into
 this trap, giving high scores to hardware that does not turn out to
-functional well when deployed in real situations.
+function well when deployed in real situations.
 
-Furthermore, neuromorphic hardware has another constraint that severely limits
-the utility of simulation.  Typically, when a simulation is
-too simple to reflect reality, we add details to the simulation itself.
+A variety of robotics simulators, such as Webots and Gazebo, already exist
+and are intended for evaluating robotics performance.  These are extremely
+useful, but have two important limitations.  First, they are generally meant
+to evaluate \emph{one particular} robot body, and it is difficult to, for
+example, automatically generate a large number of different physical bodies 
+to evaluate over.  This means that such a system is good for evaluating a
+particular control system for a particular robot body, but is not suitable
+for the more general question of how well the control system will work over
+a large space of different robot bodies.  Second, these simulators tend
+to run slower than real-time.  Typically, when a simulation is
+too simple to reflect reality, more details are added to the simulation itself.
 Incredibly finely detailed simulations can be created, filling in all of the
 details needed.  However, accurate modelling of physical systems can very quickly
 become \emph{impractical to run in real time}.
 This is a fundamental problem, in that neuromorphic
-hardware is often tied to real-time interactions, and there is no way to slow down
+hardware is often tied to real-time interactions, and there can be 
+no way to slow down
 the hardware to match the simulated environment.  This means that even if
 we spent the considerable amount of research effort needed to define a
 simulated environment for a closed-loop benchmark, running that simulation 
-fast enough to interact with the desired hardware would require more
-resources than are available.  
+fast enough to interact with the desired hardware would require significant
+computing resources.  Indeed, one of the major efforts in the Neurorobotics
+section of the Human Brain Project is to develop exactly this sort of 
+computing infrastructure (\citealt{HBProbot}), with a dedicated supercomputer to run the
+physics simulations.  Until this hardware is publically available 
+(and until software
+is available to create a variety of physical robot models), this approach
+is problematic for other researchers.
 
 We are thus left with a situation where any benchmark we might define for
-a closed-loop task will be either impractical for different researchers to
-run (if it is physically embodied), or inapplicable to real-world situations
-(if it is performed in simulation).  Neither option is particularly appealing.
+a closed-loop task will be impractical for different researchers to
+run (if it is physically embodied), inapplicable to real-world situations
+(if it is a simulation that is simple enough to run in real-time), or impossible to connect to
+some neuromorphic hardware (if it is a simulation that runs slower than 
+real-time).  We thus need a new approach to provide a sharable real-time
+simulation that is robust enough that neuromorphic hardware that learns to
+deal with the simulation might also be able to deal with reality.
 
 \subsection{Minimal Simulation}
 
@@ -271,11 +290,13 @@ happens when two legs collide with each other.  Rather, if legs collide
 with each other, that is an indication that the walking behaviour is very poor.
 As long as that result is indicated we can greatly simplify the simulation
 by not including all the details necessary to model these complex physical
-interactions.
+interactions.  This approach was successfully used to develop models of
+multi-legged walking robots (\citealt{jakobiThesis}; \citealt{Meyer2003})
+and vision-based tracking of a moving object (\citealt{Nolfi2000}).
 
 \subsection{Minimal Simulation for Benchmarking}
 
-Given the success of this approach for evolutionary robotics, we propose
+Although minimal simulation has not previously been used outside the domain of evolutionary robotics, we propose
 using minimal simulation for neuromorphic benchmarks.  We would argue that
 one important use of a benchmark is \emph{generalization}.  That is, by knowing how well particular
 hardware performs on a benchmark, you can reasonably infer how well
@@ -309,7 +330,7 @@ is significant delay in the motor response.  This flexibility in parameters
 in the benchmark allows researchers to explicitly characterize those particular
 situations where their hardware excels.  
 
-\subsection{Cheap Robotics}
+\subsection{Cost-Effective Robotics}
 
 The minimal simulation described above forms the core of our method for generating benchmarks.
 The purpose of these benchmarks is that is that they should do a reasonable job
@@ -322,14 +343,15 @@ from how well different hardware performs in that situation.  Rather, the purpos
 an explicit double-check that hardware that performs
 well on the simulation benchmarks also perform well in a physical environment.
 
-To keep the physical aspect simple, we recommend cheap, widely-available
+To keep the physical aspect simple, we recommend cheap, cost-effective, 
+widely-available
 components.  This allows a greater chance for other researchers to have
 access to the same (or similar) hardware.  For the particular example 
 benchmark described in the next section, we use the Lego Mindstorms EV3 kit,
 a simple robotics platform available at most toy stores.
 
 It is important to note that there is a theoretical advantage to
-using cheap robotics hardware for benchmarking, in addition to the practical
+using simple robotics hardware for benchmarking, in addition to the practical
 advantages.  In particular, we \emph{do not want benchmarks that rely on
 high-speed, high-accuracy devices}.  The purpose of benchmarks
 is not to indicate how well this neuromorphic hardware works to control this
@@ -339,7 +361,7 @@ characterise how well some specific neuromorphic hardware works on a task
 should be able to function across a wide variety of physical embodiments, and
 so if we are to choose one particular physical embodiment to test in the
 real world, then we should choose one that is not high-precision.
-For this reason, we believe using cheap Lego robots is actually more informative
+For this reason, we believe using Lego robots is actually more informative
 for benchmarking than expensive high-precision robots.\footnote{Of course,
 for more complex benchmark tasks we may need sensory and motor capabilities
 that are beyond that of a simple Lego robot.}
@@ -452,6 +474,15 @@ Neural Engineering Framework, which has shown that spiking
 and non-spiking neurons can be used in this manner to implement a wide
 variety of computations (e.g., \citealt{stewart2014}).
 
+It should be noted that, while this algorithm fits well into neuromorphic
+hardware, other hardware might be better (in terms of 
+accuracy, energy efficiency, cost, or even development time).  Answering
+this sort of question is exactly why we need to use a benchmark that can
+compare multiple different hardware implementations of this algorithm.  
+Furthermore, since some hardware may be better in different situations,
+we need a benchmark that has flexible parameters, rather than one that is
+based on a single particular physical system.
+
 
 \subsection{Online and Offline Learning}
 
@@ -543,7 +574,7 @@ highly complex interactions between them.  Consequently, we can effectively
 benchmark how well an adaptive
 controller deals with these situations.
 
-\subsection{Calibrating the Minimal Simulation via Cheap Robotics}
+\subsection{Calibrating the Minimal Simulation via Cost-Effective Robotics}
 
 It is important to ensure that the minimal simulation defined
 in the previous section is representative of the sorts of real-world
@@ -632,7 +663,11 @@ the neuromorphic hardware to be tested; 2. construct the minimal
 simulation; 3. determine a metric (e.g. root-mean-squared error; rmse)
 to record; 4. specify distributions for any parameters in the
 simulation.  We then perform multiple runs of the simulation, each
-time choosing different values from the parameter distributions.  We
+time choosing different values from the parameter distributions.  For
+each run, we reset the hardware to its initial state, so there is no
+learning from one run to the next.  This means our metric indicates
+how well the system will perform on a single environment, rather than attempting
+to use the same learned parameters across different environments.  We
 can then plot how the metric varies as a function of a particular parameter
 of interest, or how it compares across different hardware for a
 given set of parameter distributions.
@@ -678,20 +713,26 @@ that it relies on fixed-point computations and an asynchronous on-chip
 communication system.
 
 All three hardware systems drastically improve performance on this task, as
-compared to the non-adaptive controller.
+compared to the non-adaptive controller.  Statistical significance was
+measured with a two-tailed t-test.
 
 \subsection{Computational Power Benchmark}
 
 In Figure \ref{fig:analysis_basic}, all three systems perform equally well.
+This means that the timing and accuracy differences between the fixed-point
+asynchronous SpiNNaker implementation and the floating-point synchronous
+CPU/GPU impementations do not affect performance on this task.
 However, on that benchmark all three systems are implementing exactly 500
 neurons.  This demonstrates that the
 differences in neuron model across that hardware does not significantly
 impact performance.  Given that closed-loop models rely on real-time simulation,
 it is also important to determine how many neurons each piece of hardware is capable of running in real time.
-This is shown in Figure \ref{fig:analysis_compute}.  With the current implementation, the CPU can
-run 5200 neurons, the GPU 1500 neurons, and a single SpiNNaker core (of which
-there are 18 on one chip) can run 500
-neurons.\footnote{The full chip can run much more than 500 neurons; here we use just a single one of the cores on the SpiNNaker chip.}  These values were measured empirically with the current versions
+This is shown in Figure \ref{fig:analysis_compute}.  With the current
+implementation, including both the Leaky Integrate-and-Fire neuron model
+and the learning rule, the CPU can
+run 5200 neurons, the GPU 1500 neurons, and a single SpiNNaker core can
+run 500 neurons (or 500 $\times$ 16 = 8000 neurons for the whole chip).
+These values were measured empirically with the current versions
 of the reference Nengo implementation, the Nengo OpenCL implementation,
 and the Nengo SpiNNaker implementation (as of August 10, 2015).  All other
 parameters are as before.
@@ -758,15 +799,15 @@ that this controller could be used to control larger systems than those tested h
 
 \section{Discussion}
 
-While the primary purpose of this paper is in decribing the benchmarking
+While the primary purpose of this paper is in describing the benchmarking
 methodology, it is also worth noting that these benchmarks indicate
-that the neuromorphic learning rule under investigation here is extremely robost.  As
+that the neuromorphic learning rule under investigation here is quite robost.  As
 shown in Figure \ref{fig:analysis_neurons_cpu}, even just 500 neurons can consistently
 adapt to control a \emph{randomly generated} 15-joint body simulation, and
 deal with larger delays and noise than were seen in the example 1-joint
 physical embodiment.  Since this learning system is robust across such a
 wide range of conditions, and since it is efficiently implementable in a
-wide variety of neuromorohic hardware, we feel it is worth further study.  This must include 
+wide variety of neuromorphic hardware, we feel it is worth further study.  This must include 
 both a wider variety of minimal simulation benchmarks and also a few more 
 traditional benchmarks.  These traditional
 benchmarks would be particular real physical systems (specific robot arms,
@@ -823,7 +864,10 @@ create modify those randomly generated forces to ones that are more appropriate
 for different tasks.  For example, it
 may be of interest to randomly generate $N$-joint arms with random arm
 lengths and random masses, and derive (an approximation of) the actual forces 
-that would be seen in those situations.
+that would be seen in those situations.  In particular, we feel benchmarks
+based on the biologically-inspired ``soft-robotics'' systems (e.g. \citealt{Pfeifer2013})
+would be particularly appropriate for neural control, given the complexity
+involved in generating traditional controllers for them.
 
 \subsection{Other Benchmarks}
 
@@ -979,7 +1023,7 @@ Ontario Innovation Trust.
  \textbf{\refstepcounter{figure}\label{fig:analysis_basic} Figure \arabic{figure}.}{ Benchmark results comparing three hardware systems.
      Each system is running 500 neurons.  The hardware do not statistically
      significantly differ, but are all statistically significant improvements 
-     over no adaptation (p<0.05).
+     over no adaptation ($p<0.05$).
      Scatterplots show individual runs (with random jitter on the x-axis
      to avoid overlap), the 
      shaded area is the mean plus or minus the standard deviation, and the 95\% confidence interval of the mean is shown.}
@@ -993,7 +1037,7 @@ Ontario Innovation Trust.
      in terms of their performance when running as many neurons as they are capable of in real time.  Scatterplots show individual runs (with random
      jitter on the x-axis to avoid overlap), the 
      shaded area is the mean plus or minus the standard deviation, and the 95\% confidence interval of the mean is shown.  In this case,
- there is no statistical difference between the three hardware systems (p>0.05).}
+ there is no statistical difference between the three hardware systems ($p>0.05$).}
 \end{figure}
 
 \begin{figure}[h!]
@@ -1003,7 +1047,7 @@ Ontario Innovation Trust.
  \textbf{\refstepcounter{figure}\label{fig:analysis_power} Figure \arabic{figure}.}{ Benchmark results comparing three hardware systems
      in terms of their performance when running as many neurons as they are capable of per 0.1 Watt of power consumption.  Scatterplots show individual runs (with random jitter on the x-axis to avoid overlap), the 
      shaded area is the mean plus or minus the standard deviation, and the 95\% confidence interval of the mean is shown.  The SpiNNaker system is a statistically
- significant improvement over the other two (p<0.05).}
+ significant improvement over the other two ($p<0.05$).}
 \end{figure}
 
 \begin{figure}[h!]
