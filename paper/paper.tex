@@ -645,6 +645,15 @@ above, $K_f$ is 1 and $T$ is 10.  $q_d$ is set to be Gaussian white noise with
 a maximum frequency of 1Hz and RMS power of 1.  Each simulation is run
 for 20 seconds, and the error is computed on the last 10 seconds.
 
+For each of three hardware platforms, we implemented the neural control
+system with the learning rule described above.  That is, we started with a
+standard non-neural PD controller that produced an output $u$.  The state
+information $q$ was fed into a group of neurons using randomly generated
+input weights, producing output activity $A$.  The actual output to the motor
+was $u+Ad$ where $d$ is a vector of learned weights, initialized to all
+zeros.  The learning rule was $\Delta d=\alpha A \times u$, and the
+learning rate $\alpha$ was fixed at 0.001.  
+
 The first hardware tested on this benchmark is an Intel i5-3337U CPU running
 at 1.80GHz.  This is not neuromorphic hardware, but provides a
 useful baseline.  The learning algorithm was implemented using Nengo,
