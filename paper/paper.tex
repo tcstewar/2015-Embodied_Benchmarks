@@ -90,7 +90,10 @@ $^{2}$Mobile Intelligent Autonomous Systems group,
     modify the benchmarks to identify specific task domains where particular
     hardware excels.  To demonstrate the method, we present a set of novel benchmarks
     that focus on motor control for an arbitrary system with
-    unknown external forces.
+    unknown external forces.  Using these benchmarks, we show that an error-driven
+    learning rule can consistently improve motor control performance across
+    a randomly generated family of closed-loop simulations, even when there are
+    up to 15 interacting joints to be controlled.
 
 \tiny
  \keyFont{ \section{Keywords:} neuromorphic hardware, benchmarking, 
@@ -746,6 +749,23 @@ that this controller could be used to control larger systems than those tested h
 
 \section{Discussion}
 
+While the primary purpose of this paper is in decribing the benchmarking
+methodology, it is also worth noting that these benchmarks indicate
+that the neuromorphic learning rule under investigation here is extremely robost.  As
+shown in \ref{fig:analysis_neurons_cpu}, even just 500 neurons can consistently
+adapt to control a \emph{randomly generated} 15-joint body simulation, and
+deal with larger delays and noise than were seen in the example 1-joint
+physical embodiment.  Since this learning system is robust across such a
+wide range of conditions, and since it is efficiently implementable in a
+wide variety of neuromorohic hardware, we feel it is worth further study.  This must include 
+both a wider variety of minimal simulation benchmarks and also a few more 
+traditional benchmarks.  These traditional
+benchmarks would be particular real physical systems (specific robot arms,
+for example), but testing on those would only reveal performance on those
+particular arms.  As we argued here, benchmarking against a wide variety of 
+randomly generated minimal simulation systems is needed to demonstrate the
+space of potential situations in which neuromorphic adaptive control performs well.
+
 The benchmarks described above all use the same underlying minimal simulation
 as a way to characterize the overall performance of particular hardware
 across a range of situations.  By adjusting the random distributions that
@@ -874,6 +894,13 @@ setting parameters in different ways.  We believe this sort of flexibility
 is important in a benchmark method, as it lets researchers be explicit about what
 their hardware is good at, while still using the same basic and shareable
 benchmark framework.
+
+Finally, we note that the benchmarking results show that this learning rule
+can consistently improve control performance across a wide variety of randomly
+generated situations, and is suitable for implementation on a wide variety
+of neuromorphic hardware.  Given this promising result, we will be further
+evaluating it on specific physical embodiments, and comparing it to more
+complex variants of PID control.
 
 \section*{Disclosure/Conflict-of-Interest Statement}
 
