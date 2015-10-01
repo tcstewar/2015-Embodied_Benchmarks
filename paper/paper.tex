@@ -761,7 +761,7 @@ that this controller could be used to control larger systems than those tested h
 While the primary purpose of this paper is in decribing the benchmarking
 methodology, it is also worth noting that these benchmarks indicate
 that the neuromorphic learning rule under investigation here is extremely robost.  As
-shown in \ref{fig:analysis_neurons_cpu}, even just 500 neurons can consistently
+shown in Figure \ref{fig:analysis_neurons_cpu}, even just 500 neurons can consistently
 adapt to control a \emph{randomly generated} 15-joint body simulation, and
 deal with larger delays and noise than were seen in the example 1-joint
 physical embodiment.  Since this learning system is robust across such a
@@ -978,9 +978,10 @@ Ontario Innovation Trust.
 \end{center}
  \textbf{\refstepcounter{figure}\label{fig:analysis_basic} Figure \arabic{figure}.}{ Benchmark results comparing three hardware systems.
      Each system is running 500 neurons.  The hardware do not statistically
-     significantly differ, and are all clear improvements over the having
-     no adaptation at all.
-     Scatterplots show individual runs, the 
+     significantly differ, but are all statistically significant improvements 
+     over no adaptation (p<0.05).
+     Scatterplots show individual runs (with random jitter on the x-axis
+     to avoid overlap), the 
      shaded area is the mean plus or minus the standard deviation, and the 95\% confidence interval of the mean is shown.}
 \end{figure}
 
@@ -989,9 +990,10 @@ Ontario Innovation Trust.
 \includegraphics[width=18cm]{figures/plot_compute}
 \end{center}
  \textbf{\refstepcounter{figure}\label{fig:analysis_compute} Figure \arabic{figure}.}{ Benchmark results comparing three hardware systems
-     in terms of their performance when running as many neurons as they are capable of in real time.  Scatterplots show individual runs, the 
+     in terms of their performance when running as many neurons as they are capable of in real time.  Scatterplots show individual runs (with random
+     jitter on the x-axis to avoid overlap), the 
      shaded area is the mean plus or minus the standard deviation, and the 95\% confidence interval of the mean is shown.  In this case,
-     all three hardware systems perform equally well.}
+ there is no statistical difference between the three hardware systems (p>0.05).}
 \end{figure}
 
 \begin{figure}[h!]
@@ -999,9 +1001,9 @@ Ontario Innovation Trust.
 \includegraphics[width=18cm]{figures/plot_power}
 \end{center}
  \textbf{\refstepcounter{figure}\label{fig:analysis_power} Figure \arabic{figure}.}{ Benchmark results comparing three hardware systems
-     in terms of their performance when running as many neurons as they are capable of per 0.1 Watt of power consumption.  Scatterplots show individual runs, the 
+     in terms of their performance when running as many neurons as they are capable of per 0.1 Watt of power consumption.  Scatterplots show individual runs (with random jitter on the x-axis to avoid overlap), the 
      shaded area is the mean plus or minus the standard deviation, and the 95\% confidence interval of the mean is shown.  The SpiNNaker system is a statistically
- significant improvement over the other two.}
+ significant improvement over the other two (p<0.05).}
 \end{figure}
 
 \begin{figure}[h!]
