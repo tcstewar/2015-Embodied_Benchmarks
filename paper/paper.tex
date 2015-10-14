@@ -801,7 +801,7 @@ that this controller could be used to control larger systems than those tested h
 
 While the primary purpose of this paper is in describing the benchmarking
 methodology, it is also worth noting that these benchmarks indicate
-that the neuromorphic learning rule under investigation here is quite robost.  As
+that the neuromorphic learning rule under investigation here is quite robust.  As
 shown in Figure \ref{fig:analysis_neurons_cpu}, even just 500 neurons can consistently
 adapt to control a \emph{randomly generated} 15-joint body simulation, and
 deal with larger delays and noise than were seen in the example 1-joint
@@ -871,54 +871,110 @@ involved in generating traditional controllers for them.
 
 \subsection{Other Benchmarks}
 
-The approach to benchmarking presented here can be applied to a wide variety of other tasks,
-by defining different minimal simulations and evaluating hardware and algorithms across a random sampling
-of simulation parameters.  
+While the particular minimal simulation shown here suggests that
+this adaptive control algorithm is worth further investigation, the overall
+goal of this paper is to present the general idea of using minimal simulation
+as a way to benchmark neuromorphic hardware.  That is, we believe this same
+approach could be scaled up to other, more complex, closed-loop tasks.
+Importantly, benchmarking these other tasks would require both the creation
+of new minimal simulations \emph{and} the specification of new algorithms
+suitable for performing those tasks.  These algorithms would then be
+implemented with the neuromorphic hardware and connected to the minimal
+simulations to construct new benchmarks.
 
-One possibility is to consider motor control where
-the state being controlled \emph{is not the motor state itself}.  That is,
+As a first step towards scaling up, consider the more complex task of
+controlling a system where the values to be controlled are not the 
+joints themselves.  For example, 
 suppose we want to control the position of a hand $x$, but our output $u$
 only directly controls the joints $q$ of an arm.  The position of the hand $x$
 is some function of $q$, but this function may be unknown or highly complex.
-Crucially, there is a learning rule that is similar to the one discussed above
+This is often expressed as $\dot{x}=J(q)\dot{q}$, where $J(q)$ is the
+Jacobian.  In order to successfully control $x$ (the hand), the system
+needs to learn the relationship $J$ that indicates how adjusting various
+joints $q$ will affect the position of the hand.  Crucially, there is a
+learning rule similar to the one discussed above
 that can learn this mapping (\citealt{adaptiveJacobian}), and we have had
-some success in using it for particular arm control tasks (\citealt{dewolf2014}).
-This would give a benchmark with a much more flexible set of capabilities;
-for example a non-neural version of this learning algorithm was able to
-learn to control a robot arm to follow a certain path, given only the
-visual feedback of where the tip of its hand was, without knowing the
-geometry of its own hand, or the position of the camera with relation to that
-hand (\citealt{adaptiveJacobian}).  While it is unlikely that such a
-system would work for \emph{any} possible sensorimotor combination, developing
-such a benchmark could identify the space of such embodiments that a
-particular algorithm running on particular neuromorphic hardware would be
-good at controlling.
+some success in using it for particular arm control tasks
+(\citealt{dewolf2014}).  So far we have only tested this algorithm
+in the context of one particular arm, but it was successful in learning
+this relationship, and thus learning to correctly move its hand given
+an unknown arm geometry.  To establish that this is a generally
+useful task for neuromorphic hardware, we need to benchmark this rule against
+a large family of different arms (and other systems to be controlled).  This
+can be done by generating minimal simulations very similar to the
+one presented here; the main difference is that there would also be a
+randomly generated Jacobian function $J(q)$.  It should also be noted that
+in this context, the dimensionality of $x$ and the dimensionality of $q$
+are separate variables.  It may be that some algorithms work well when
+$q$ is much larger than $x$, while others work best when they are similar.
+Exploring this relationship is fairly straightforward with minimal simulation,
+and would be an important result to know when choosing neuromorphic hardware
+for a particular new situation.
 
-More generally, we believe that this approach to developing benchmarks is applicable
-to entirely different kinds of tasks.  For example, much of the original work
-on minimal simulation involved robot navigation and obstacle avoidance.  
-\cite{Jakobi97evolutionaryrobotics} created a
-minimal simulation of an environment with fixed walls, a mobile robot, and
-various sensory systems.  Using such a simulation, a benchmark involving movement between locations
-while avoiding collisions could be defined, and the environment could be
-enhanced with moving obstacles and a richer set of sensors.  The eventual
-goal might be to achieve reliable movement in an environment that includes
-people.
+Given this, we believe that the combination of minimal simulation and
+neuromorphic hardware is useful for adaptive control problems in general,
+whether the adaptation is in terms of an additive bias term to compensate
+for external forces such as gravity (as seen in the benchmarks presented
+in this paper) or if it is in terms of learning the Jacobian term relating
+the controlled variables $q$ to the desired target space $x$ (as in
+the adaptive Jacobian model discussed in the previous paragraph).  This
+should allow systems to adapt to both unknown external forces and to unknown
+bodily geometries.  However,
+it is less clear whether this approach will scale to more complex robotics
+tasks.
 
-Another example is the application of this method to classical and
-operant conditioning.  Conditioning effects are extremely common in living
+One more complex robotic task where this approach might be applicable is
+navigation and obstacle avoidance.  Here, we would need both a more complex
+minimal simulation for the environment, and an explicit neuromorphic
+algorithm capable of performing this avoidance.  The minimal simulation itself
+would need to include some sort of sensory modality (vision,
+range sensing, or both), and movement in a two-dimensional environment
+(probably wheeled movement, for simplicity).  To run such a simulation in
+real-time, we would use many of the same tricks and simplifications used
+in Jakobi's original work (\citealt{Jakobi97evolutionaryrobotics}).  These
+included making separate simulations for corridors and intersections (rather
+than generic simulations for any possible geometries), using noisy lookup
+tables (rather than detailed physics simulations), treating collisions as
+failures (rather than modelling them), and using shifting random dot patterns
+for visual stimuli (rather than high-fidelity image rendering).  Given
+Jakobi's success at building high-speed simulations over 20 years ago, we
+believe real-time simulations of this type are feasible now.
+
+However, having such a simulation is only half of what is required.  We would
+also need a control algorithm suitable for such a situation.  This is,
+itself, a topic of much research, and there is no clear best approach.
+We have been exploring the use of reinforcement learning in
+neural models (\citealt{Stewart2012a, Rasmussen2014b}), and note that these 
+make use of the same learning algorithm as described here, with additional
+neural components needed to implement action selection.  In this case, the
+learning rule would adjust the system's estimate of which action is most
+appropriate given the current sensory state.  We are currently investigating
+this approach further.
+
+As a more speculative possibility, we also intend to apply this approach
+to tasks involving classical and operant conditioning.  Conditioning effects
+are extremely common in living
 creatures, and are clearly evident when animals are exposed to novel environments.  As such,
 it is natural to define benchmark tasks involving learning the associations between
 sensory events in the environment (akin to classical conditioning) and the
 associations between actions and desired sensory states (akin to operant
-conditioning).  Again, the approach of minimal simulation could be used
-to generate random complex sensory mappings, and various neuromorphic
-learning algorithms could be evaluated in terms of their ability to
-discern these patterns.  Importantly, this would also include the ability
-to unlearn these patterns as the environment changes.  Interestingly, the
-neuron-based classical conditioning learning rule used by \cite{verschure2003}
-is quite similar to the learning rule used in the adaptive control benchmark
-here.
+conditioning).  In this case, the minimal simulations would consist of a
+set of small, controlled rooms with controllable buttons and stimuli,
+matching the sort of ``Skinner Box'' environments used in experimental
+psychology.  The minimal simulation will also require a basic simulated
+body, capable of movement, pushing buttons, and observing stimuli.  The
+tasks would consist of pairing stimuli together and determining if the
+learning algorithm is able to respond correctly.  For example, a model
+might have a built-in response where it will salivate when presented with
+food.  If the sound of a bell is paired with the presentation of food, it
+should learn to salivate with presented with just the sound of a bell.
+Importantly, there are extensive results showing the rate at which such
+associations are learned and un-learned in various animals.  Furthermore,
+we would test the ability to learn associations that are separated in time (delayed conditioning), and to recover associations that had been previously learned (spontaneous recovery).
+Interestingly, there already exist
+neuron-based classical conditioning learning rules that may be suitable
+for such implementation, given their similarity to the learning rule used in
+the adaptive control benchmark (\citealt{verschure2003}).
 
 \section {Conclusions}
 
