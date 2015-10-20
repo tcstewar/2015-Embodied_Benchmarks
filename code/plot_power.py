@@ -16,7 +16,7 @@ all_data = []
 index = 1
 #for n_neurons in [0, 5200, 1500, 500]:
 for n_neurons in [ 23, 38, 500]:
-    path = 'vary_neurons3_%d' % n_neurons
+    path = 'vary_neurons4_%d' % n_neurons
 
     data_x = []
     data_y = []
@@ -61,7 +61,7 @@ for n_neurons in [ 23, 38, 500]:
     width = 0.3
 
     pylab.fill_between([index-width, index+width], mean-sd, mean+sd, color='#aaaaaa')
-    pylab.scatter(np.random.uniform(index-width, index+width, data_y.shape), data_y, s=30, marker='x', color='k')
+    pylab.scatter(np.random.uniform(index-width, index+width, data_y.shape), data_y, s=30, marker='x', color='k', alpha=0.3)
     error_means.append(mean)
     error_bars.append([mean-ci[0], ci[1]-mean])
     index += 1
@@ -72,7 +72,7 @@ for i, j in [(0,1), (0,2), (1,2)]:
 
 error_bars = np.array(error_bars)
 
-pylab.errorbar(np.arange(len(error_bars))+1, error_means, yerr=error_bars.T, color='k', linewidth=3)
+pylab.errorbar(np.arange(len(error_bars))+1, error_means, yerr=error_bars.T, color='k', linewidth=3, capthick=2, capsize=4)
 
 pylab.xticks([1, 2, 3], ['Intel i5-337U CPU\n(23 neurons)', 'Nvidia Tesla C2075 GPU\n(38 neurons)', 'SpiNNaker core\n(500 neurons)'])
 
@@ -82,12 +82,12 @@ def annotate_bar(ax, text, x1, x2, y, text_offset, shrink=50):
                  shrinkB=shrink, lw=2)
     ax.annotate('', xy=(x1,y), xytext=(x2, y), arrowprops=props)
 
-annotate_bar(ax, 'p<0.05', 1, 3, 0.019, 0.017, shrink=105)
-annotate_bar(ax, 'p>0.05', 1, 1.9, 0.022, 0.008, shrink=45)
-annotate_bar(ax, 'p<0.05', 2.1, 3, 0.022, 0.008, shrink=45)
+#annotate_bar(ax, 'p<0.05', 1, 3, 0.019, 0.017, shrink=105)
+#annotate_bar(ax, 'p>0.05', 1, 1.9, 0.022, 0.008, shrink=45)
+#annotate_bar(ax, 'p<0.05', 2.1, 3, 0.022, 0.008, shrink=45)
 
 pylab.title('Computational Efficiency Benchmark')
-pylab.ylabel('rmse')
+pylab.ylabel('rmse (radians)')
 pylab.ylim(0, 0.04)
 pylab.savefig('plot_power.png', dpi=300)
 #pylab.show()
