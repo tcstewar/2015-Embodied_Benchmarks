@@ -8,12 +8,14 @@ import embodied_benchmarks as bench
 import benchmark
 
 class SingleArmEV3(benchmark.Benchmark):
+    links = {}
+
     def params(self):
         self.default('Kp', Kp=2.0)
         self.default('Kd', Kd=1.0)
         self.default('Ki', Ki=0.0)
         self.default('tau_d', tau_d=0.001)
-        self.default('T', T=0.5)
+        self.default('T', T=20)
         self.default('IP address of EV3', address='10.42.0.3')
         self.default('motor index', motor_index=0)
         self.default('desired path', path='step')
@@ -26,7 +28,9 @@ class SingleArmEV3(benchmark.Benchmark):
         self.default('radius', radius=1.0)
 
     def model(self, p):
-        link = ev3link.EV3Link(p.address)
+        if p.address not in SingleArmEV3.links:
+            SingleArmEV3.links[p.address] = ev3link.EV3Link(p.address)
+        link = SingleArmEV3.links[p.address]
         self.link = link
         path = '/sys/class/tacho-motor/motor%d/' % p.motor_index
         self.path = path
@@ -115,17 +119,20 @@ class SingleArmEV3(benchmark.Benchmark):
             plt.plot(sim.data[self.p_t], sim.data[self.p_q])
             #plt.plot(sim.data[self.p_t], sim.data[self.p_u])
 
-        rate = len(sim.data[self.p_t]) / p.T
+        rate = len(sim.data[self.p_t]) / float(p.T)
 
         q = sim.data[self.p_q][:,0]
         d = sim.data[self.p_desired][:,0]
         t = sim.data[self.p_t][:,0]
         
         offset = benchmark.find_offset(q, d)
+        #offset = 1
 
         delay = np.mean(t[offset:]-t[:-offset])
 
         diff = d[:-offset] - q[offset:]
+        N = len(q) / 2
+        diff = diff[N:]
         rmse = np.sqrt(np.mean(diff**2))
 
 
