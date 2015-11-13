@@ -713,8 +713,7 @@ that it relies on fixed-point computations and an asynchronous on-chip
 communication system.
 
 All three hardware systems drastically improve performance on this task, as
-compared to the non-adaptive controller.  Statistical significance was
-measured with a two-tailed t-test.
+compared to the non-adaptive controller.
 
 \subsection{Computational Power Benchmark}
 
@@ -761,8 +760,8 @@ to an environment.  However, that would not be useful for a closed-loop task.
 
 Given the above considerations, the benchmark indicates that the CPU can run 23 neurons per 0.1W,
 the GPU 38 neurons per 0.1W, and SpiNNaker can run 500 neurons per 0.1W.  
-As shown in Figure \ref{fig:analysis_power}, the neuromorphic hardware
-outperforms the CPU and GPU on this task.
+As shown in Figure \ref{fig:analysis_power}, while the GPU outperforms
+the CPU on this task, the neuromorphic hardware outperforms both of them.
 
 \subsection{Communication Delay Benchmark}
 
@@ -930,7 +929,7 @@ algorithm capable of performing this avoidance.  The minimal simulation itself
 would need to include some sort of sensory modality (vision,
 range sensing, or both), and movement in a two-dimensional environment
 (probably wheeled movement, for simplicity).  To run such a simulation in
-real-time, we would use many of the same tricks and simplifications used
+real-time, we would use many of the same optimizations and simplifications used
 in Jakobi's original work (\citealt{Jakobi97evolutionaryrobotics}).  These
 included making separate simulations for corridors and intersections (rather
 than generic simulations for any possible geometries), using noisy lookup
@@ -1079,7 +1078,7 @@ Ontario Innovation Trust.
  \textbf{\refstepcounter{figure}\label{fig:analysis_basic} Figure \arabic{figure}.}{ Benchmark results comparing three hardware systems.
      Each system is running 500 neurons.  The hardware do not statistically
      significantly differ, but are all statistically significant improvements 
-     over no adaptation ($p<0.05$).
+     over no adaptation ($p<0.05$; two-tailed t-test with Bonferroni correction; 400 samples per condition).
      Scatterplots show individual runs (with random jitter on the x-axis
      to avoid overlap), the 
      shaded area is the mean plus or minus the standard deviation, and the 95\% confidence interval of the mean is shown.}
@@ -1093,7 +1092,7 @@ Ontario Innovation Trust.
      in terms of their performance when running as many neurons as they are capable of in real time.  Scatterplots show individual runs (with random
      jitter on the x-axis to avoid overlap), the 
      shaded area is the mean plus or minus the standard deviation, and the 95\% confidence interval of the mean is shown.  In this case,
- there is no statistical difference between the three hardware systems ($p>0.05$).}
+ there is no statistical difference between the three hardware systems ($p>0.05$; two-tailed t-test with Bonferroni correction; 400 samples per condition).}
 \end{figure}
 
 \begin{figure}[h!]
@@ -1102,8 +1101,8 @@ Ontario Innovation Trust.
 \end{center}
  \textbf{\refstepcounter{figure}\label{fig:analysis_power} Figure \arabic{figure}.}{ Benchmark results comparing three hardware systems
      in terms of their performance when running as many neurons as they are capable of per 0.1 Watt of power consumption.  Scatterplots show individual runs (with random jitter on the x-axis to avoid overlap), the 
-     shaded area is the mean plus or minus the standard deviation, and the 95\% confidence interval of the mean is shown.  The SpiNNaker system is a statistically
- significant improvement over the other two ($p<0.05$).}
+     shaded area is the mean plus or minus the standard deviation, and the 95\% confidence interval of the mean is shown.  
+ All differences are statistically significant ($p<0.05$; two-tailed t-test with Bonferroni correction; 400 samples per condition).}
 \end{figure}
 
 \begin{figure}[h!]
