@@ -14,7 +14,7 @@ error_bars = []
 error_means = []
 index = 1
 for n_neurons in [0, 500, 500, 500]:
-    path = 'vary_neurons3_%d' % n_neurons
+    path = 'vary_neurons4_%d' % n_neurons
 
     data_x = []
     data_y = []
@@ -58,14 +58,14 @@ for n_neurons in [0, 500, 500, 500]:
     width = 0.3
 
     pylab.fill_between([index-width, index+width], mean-sd, mean+sd, color='#aaaaaa')
-    pylab.scatter(np.random.uniform(index-width, index+width, data_y.shape), data_y, s=30, marker='x', color='k')
+    pylab.scatter(np.random.uniform(index-width, index+width, data_y.shape), data_y, s=30, marker='x', color='k', alpha=0.3)
     error_means.append(mean)
     error_bars.append([mean-ci[0], ci[1]-mean])
     index += 1
 
 error_bars = np.array(error_bars)
 
-pylab.errorbar(np.arange(len(error_bars))+1, error_means, yerr=error_bars.T, color='k', linewidth=3)
+pylab.errorbar(np.arange(len(error_bars))+1, error_means, yerr=error_bars.T, color='k', linewidth=3, capthick=2, capsize=4)
 
 pylab.xticks([1, 2, 3, 4], ['No adaptation', 'Intel i5-337U CPU\n(500 neurons)', 'Nvidia Tesla C2075 GPU\n(500 neurons)', 'SpiNNaker core\n(500 neurons)'])
 
@@ -81,7 +81,7 @@ annotate_bar(ax, 'p>0.05', 2, 4, 0, 0.08, shrink=80)
 annotate_bar(ax, '', 2, 2.9, 0.03, 0.04, shrink=35)
 annotate_bar(ax, '', 3.1, 4, 0.03, 0.04, shrink=35)
 
-pylab.ylabel('rmse')
+pylab.ylabel('rmse (radians)')
 pylab.ylim(0, 0.25)
 pylab.savefig('plot_basic.png', dpi=300)
 #pylab.show()

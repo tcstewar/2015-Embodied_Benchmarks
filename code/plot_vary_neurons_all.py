@@ -79,7 +79,7 @@ for D in [1, 5, 10, 15]:
     if index in [3, 4]:
         pylab.xlabel('number of neurons')
     if index in [1,3]:
-        pylab.ylabel('rmse')
+        pylab.ylabel('rmse (radians)')
     pylab.ylim(-0.05, 0.5)
     index += 1
 pylab.savefig('plot_vary_neurons.png', dpi=300)
