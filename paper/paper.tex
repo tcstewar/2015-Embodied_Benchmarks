@@ -630,12 +630,18 @@ $q_d(t)$.  Adaptation provides a clear improvement.
 
 Now that we have this physical example of the task out minimal simulation
 benchmark is meant to cover, we can use it to calibrate the parameters of
-the simulation.  For example, communication with the EV3 happens around
-200Hz, meaning that there must be a delay on the order of 0.005 seconds.  Given
+the simulation.  For example, to characterize the communication delay
+between the computing hardware and the EV3 robot, we simply measure the number
+of times per second we can send a motor command $u$ and read the position of
+the motor $q$ per second.  This works because the \texttt{ev3\_link} software
+is entirely synchronous and only responds with motor positions when it
+processes a command to do so.  This rate of communication averaged 154-156Hz (95\%
+bootstrap confidence interval over 100 trials) with a standard deviation of
+3.3-4.7Hz (95\% bootstrap C.I.).  This indicates a round-trip
+delay on the order of 0.006 seconds.  Given
 this, we set the delays in the simulation to be uniformly chosen between
-0 and 0.01.  Importantly, we do not need to exactly measure the delay in the
-EV3 robot --- we just make sure that the minimal simulation covers even worse
-cases.
+0 and 0.01, so that the minimal simulation covers delay conditions even
+worse than those seen in the EV3 robot.
 
 For sensor noise, we note that the EV3 rotation encoders for the motors (the
 devices that measure $q$) have a resolution of 0.0175 (1 degree).  This is a
