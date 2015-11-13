@@ -624,7 +624,9 @@ overshoots and comes back part-way, due to physical momentum.
 However, with adaptation (the right-hand side of Figure \ref{fig:ev3}),
 the system learns to counteract this extra force due to gravity.  After
 the first 5 seconds, the system is able to bring $q$ much closer to the
-desired $q_d$.
+desired $q_d$.  Figure \ref{fig:ev3runs} shows the average improvement over
+50 experimental runs with different randomly-generated desired target paths
+$q_d(t)$.  Adaptation provides a clear improvement.
 
 Now that we have this physical example of the task out minimal simulation
 benchmark is meant to cover, we can use it to calibrate the parameters of
@@ -1069,6 +1071,21 @@ Ontario Innovation Trust.
  The effects of adaptation over two different desired trajectories are shown.  Without adaptation, the joints $q$ do not reach the desired $q_d$ when $q_d$ is large (which
  is when the external force is largest).  With adaptation, $q$ is closer to $q_d$ after about 5 seconds, showing that the system has quickly learned to compensate.
  Points in time where the improvement is clearest are circled.}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=9cm]{figures/plot_ev3}
+\end{center}
+ \textbf{\refstepcounter{figure}\label{fig:ev3runs} Figure \arabic{figure}.}{ The effect
+     of adaptive control on a single-joint lego robot (Figure \ref{fig:lego}).
+     Each run uses a randomly generated desired trajectory $q_d(t)$ over
+     20 seconds, and root-mean-squared-error is computed over the last
+     10 seconds only.  The adaptive algorithm provides a significant improvement
+     ($p<0.05$; two-tailed t-test; 50 samples).
+     Scatterplots show individual runs (with random jitter on the x-axis
+     to avoid overlap), the 
+     shaded area is the mean plus or minus the standard deviation, and the 95\% confidence interval of the mean is shown.}
 \end{figure}
 
 \begin{figure}[h!]
