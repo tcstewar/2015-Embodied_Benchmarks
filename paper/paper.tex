@@ -644,7 +644,7 @@ this, we set the delays in the simulation to be uniformly chosen between
 worse than those seen in the EV3 robot.
 
 For sensor noise, we note that the EV3 rotation encoders for the motors (the
-devices that measure $q$) have a resolution of 0.0175 (1 degree).  This is a
+devices that measure $q$) have a resolution of 0.0175 radians (1 degree).  This is a
 very different sort of noise than the Gaussian noise used in the simulation,
 so we set the simulation noise $\sigma_q$ to be much larger (uniformly distributed
 between 0 and 0.1).  Similarly, the motor resolution is 0.01, as it accepts 
@@ -655,13 +655,17 @@ Finally, we can use the physical system to calibrate the relationship between
 $T$ (the maximum torque applied by the motor) and $K_f$ (the scaling factor
 of the external force).  After all, we do not want external forces that are
 so strong that the system does not have enough strength to counteract them.
-On the physical robot, in the worst-case scenario ($q=\pi/2$ or $-\pi/2$),
-the motors must be driven at around 0.3 times their maximum strength to
-balance the force of gravity.  (This can, of course, be adjusted by changing
-the weight and its position on the end of the arm).  If we arbitrarily fix $K_f$ to 1 and randomly
+To measure this on the physical robot, we applied a standard PID controller
+with a target $q_d$ of $\pi/2$ (the position at which maximum torque must
+be applied to counteract gravity).  After giving the system 5 seconds to
+stabilize, we recorded the required motor command sent to the robot (from -1
+to +1).  On average, this was 0.11 to 0.16 (95\% bootstrap confidence interval
+over 50 trials), with a standard deviation of 0.07 to 0.12 (95\% bootstrap C.I.),
+and a maximum value of 0.36.  Considering this a worst-case scenario, if we
+arbitrarily fix $K_f$ to 1 and randomly
 generate external forces given the process described above, then 95\% of
 the time we get values between -3.75 and +3.75.  Since we want the motors to
-be strong enough to compensate for forces in that range, we set $T$ to 10.
+be strong enough to compensate for forces in that range, we set $T$ to 10 ($\approx 3.75 / 0.36$).
 
 \section{Benchmark Analysis}
 
